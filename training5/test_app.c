@@ -25,6 +25,7 @@ int main(int argc, char **argv)
 	memcpy(get_number, argv[1], sizeof(get_number));
 
 	write(test_fd, &get_number, sizeof(get_number));
+	read(test_fd, &get_number, sizeof(get_number));
 	close(test_fd);
 
 	return 0;

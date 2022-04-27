@@ -8,13 +8,18 @@
 #define DEVICE_DRIVER_NAME "driver_test"
 long number = 0;
 int major_number;
+static msg[4];
 
 int test_device_driver_open(struct inode *, struct file *);
 int test_device_driver_release(struct inode *, struct file *);
 ssize_t test_device_driver_write(struct file *, const char *, size_t, loff_t *);
+ssize_t test_device_driver_read(struct file *filep, char *buffer, size_t length, loff_t *offset);
 
 static struct file_operations device_driver_fops =
-{ .open = test_device_driver_open, .write = test_device_driver_write, .release = test_device_driver_release };
+{ .open = test_device_driver_open,
+  .read = test_device_driver_read,
+  .write = test_device_driver_write,
+  .release = test_device_driver_release };
 
 
 int test_device_driver_open(struct inode *minode, struct file *mfile) {
@@ -30,7 +35,7 @@ int test_device_driver_release(struct inode *minode, struct file *mfile) {
 
 ssize_t test_device_driver_write(struct file *inode, const char *gdata, size_t length, loff_t *off_what) {
 	const char *tmp = gdata;
-	char kernel_buff[4];
+	char *kernel_buff = msg;
 
 
 	printk("Write\n");
@@ -42,6 +47,25 @@ ssize_t test_device_driver_write(struct file *inode, const char *gdata, size_t l
 
 	return 1;
 }
+
+ssize_t test_device_driver_read(struct file *filep, char *buffer, size_t length, loff_t *offset) {
+	/* Number of bytes actually written to the buffer */
+	int result = 0;
+	char *msgp = msg;
+	int i;
+	char tmp = '0';
+
+	for (i = 0; i<4; i++) {
+		// int success;
+		// success = kstrtoint(msgp[i], 10, &tmp);
+		// result += tmp;
+		*tmp += msgp[i];
+	}
+
+	copy_to_user(&tmp, buffer, 1);
+
+	return 1;
+};
 
 int __init device_driver_init(void)
 {
