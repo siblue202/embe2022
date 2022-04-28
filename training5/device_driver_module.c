@@ -8,7 +8,7 @@
 #define DEVICE_DRIVER_NAME "driver_test"
 long number = 0;
 int major_number;
-static msg[4];
+static char msg[4];
 
 int test_device_driver_open(struct inode *, struct file *);
 int test_device_driver_release(struct inode *, struct file *);
@@ -52,17 +52,18 @@ ssize_t test_device_driver_read(struct file *filep, char *buffer, size_t length,
 	/* Number of bytes actually written to the buffer */
 	int result = 0;
 	char *msgp = msg;
-	int i;
-	char tmp = '0';
+	int i, tmp;
+	unsigned char buf;
 
-	for (i = 0; i<4; i++) {
-		// int success;
-		// success = kstrtoint(msgp[i], 10, &tmp);
-		// result += tmp;
-		*tmp += msgp[i];
+	tmp = kstrtoint(msgp, 10, &tmp);
+	for (i=0; i<4; i++) {
+		result += tmp%10;
+		tmp /= 10;
 	}
 
-	copy_to_user(&tmp, buffer, 1);
+	buf = result;
+
+	copy_to_user(&buf, buffer, 1);
 
 	return 1;
 };
