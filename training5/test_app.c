@@ -10,6 +10,7 @@ int main(int argc, char **argv)
 {
 	int test_fd;
 	char get_number[4];
+	unsigned char rst;
 
 	if(argc != 2) { 
 		printf("Usage : [Number]\n");
@@ -25,8 +26,8 @@ int main(int argc, char **argv)
 	memcpy(get_number, argv[1], sizeof(get_number));
 
 	write(test_fd, &get_number, sizeof(get_number));
-	read(test_fd, &get_number, sizeof(get_number));
-	printf("read data from kernel buffer : %d \n", get_number);
+	read(test_fd, &rst, sizeof(rst));
+	printf("read data from kernel buffer : %d \n", rst);
 	close(test_fd);
 
 	return 0;
