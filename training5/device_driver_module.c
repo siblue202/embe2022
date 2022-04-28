@@ -6,7 +6,8 @@
 #include <linux/uaccess.h>
 
 #define DEVICE_DRIVER_NAME "driver_test"
-long number = 0;
+// long number = 0;
+int number = 0;
 int major_number;
 static char msg[4];
 
@@ -63,7 +64,9 @@ ssize_t test_device_driver_read(struct file *filep, char *buffer, size_t length,
 
 	buf = result;
 
-	copy_to_user(&buf, buffer, 1);
+	if (copy_to_user(&buf, buffer, 1)) {
+		return -EFAULT;
+	}
 
 	return 1;
 };
