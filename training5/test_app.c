@@ -26,6 +26,7 @@ int main(int argc, char **argv)
 
 	write(test_fd, &get_number, sizeof(get_number));
 	read(test_fd, &get_number, sizeof(get_number));
+	printf("read data from kernel buffer : %d \n", get_number);
 	close(test_fd);
 
 	return 0;
