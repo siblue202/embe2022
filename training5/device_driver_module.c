@@ -56,14 +56,14 @@ ssize_t test_device_driver_read(struct file *filep, char *buffer, size_t length,
 	unsigned char buf;
 
 	tmp = simple_strtol(msg, NULL, 10);
-	printk("kstrtoint result : %d\n", tmp);
+	// printk("kstrtoint result : %d\n", tmp);
 	for (i=0; i<4; i++) {
 		result += tmp%10;
 		tmp /= 10;
 	}
 
 	buf = result;
-	printk("read() buf : %d, %d \n", buf, sizeof(buf));
+	// printk("read() buf : %d, %d \n", buf, sizeof(buf));
 
 	if (copy_to_user(buffer, &buf, 1)) {
 		return -EFAULT;
