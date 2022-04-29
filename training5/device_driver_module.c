@@ -63,7 +63,7 @@ ssize_t test_device_driver_read(struct file *filep, char *buffer, size_t length,
 	}
 
 	buf = result;
-	printk("read() buf : %d \n", buf);
+	printk("read() buf : %d, %d \n", buf, sizeof(buf));
 
 	if (copy_to_user(&buf, buffer, 1)) {
 		return -EFAULT;
