@@ -57,13 +57,9 @@ ssize_t test_device_driver_read(struct file *filep, char *buffer, size_t length,
 	unsigned char buf;
 
 	flag = kstrtoint(msg, 10, &tmp);
-	if (!flag){
-		for (i=0; i<4; i++) {
+	for (i=0; i<4; i++) {
 		result += tmp%10;
 		tmp /= 10;
-		}
-	} else {
-		return 0;
 	}
 
 	buf = result;
