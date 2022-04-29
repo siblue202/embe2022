@@ -51,12 +51,12 @@ ssize_t test_device_driver_write(struct file *inode, const char *gdata, size_t l
 
 ssize_t test_device_driver_read(struct file *filep, char *buffer, size_t length, loff_t *offset) {
 	/* Number of bytes actually written to the buffer */
+	const char *s = msg;
 	int result = 0;
-	// char *msgp = msg;
 	int i, tmp, flag;
 	unsigned char buf;
 
-	flag = kstrtoint(msg, 10, &tmp);
+	flag = kstrtoint(s, 10, &tmp);
 	printk("kstrtoint result : %d\n", tmp);
 	for (i=0; i<4; i++) {
 		result += tmp%10;
