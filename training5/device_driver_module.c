@@ -40,7 +40,7 @@ ssize_t test_device_driver_write(struct file *inode, const char *gdata, size_t l
 
 
 	printk("Write\n");
-	if (copy_from_user(&msg, tmp, 1)) {
+	if (copy_from_user(&msg, tmp, 4)) {
 		return -EFAULT;
 	}
 	number = simple_strtol(msg, NULL, 10);
