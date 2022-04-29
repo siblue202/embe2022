@@ -51,7 +51,7 @@ ssize_t test_device_driver_write(struct file *inode, const char *gdata, size_t l
 
 ssize_t test_device_driver_read(struct file *filep, char *buffer, size_t length, loff_t *offset) {
 	/* Number of bytes actually written to the buffer */
-	const char *s = msg;
+	const char *s = &msg;
 	int result = 0;
 	int i, tmp, flag;
 	unsigned char buf;
