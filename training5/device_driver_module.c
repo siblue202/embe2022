@@ -36,14 +36,14 @@ int test_device_driver_release(struct inode *minode, struct file *mfile) {
 
 ssize_t test_device_driver_write(struct file *inode, const char *gdata, size_t length, loff_t *off_what) {
 	const char *tmp = gdata;
-	char *kernel_buff = msg;
+	// char *kernel_buff = msg;
 
 
 	printk("Write\n");
-	if (copy_from_user(&kernel_buff, tmp, 1)) {
+	if (copy_from_user(&msg, tmp, 1)) {
 		return -EFAULT;
 	}
-	number = simple_strtol(kernel_buff, NULL, 10);
+	number = simple_strtol(msg, NULL, 10);
 	printk("Copy number to kernel buffer : %d \n",number);
 
 	return 1;
@@ -52,11 +52,11 @@ ssize_t test_device_driver_write(struct file *inode, const char *gdata, size_t l
 ssize_t test_device_driver_read(struct file *filep, char *buffer, size_t length, loff_t *offset) {
 	/* Number of bytes actually written to the buffer */
 	int result = 0;
-	char *msgp = msg;
+	// char *msgp = msg;
 	int i, tmp;
 	unsigned char buf;
 
-	tmp = kstrtoint(msgp, 10, &tmp);
+	tmp = kstrtoint(msg, 10, &tmp);
 	for (i=0; i<4; i++) {
 		result += tmp%10;
 		tmp /= 10;
