@@ -53,13 +53,17 @@ ssize_t test_device_driver_read(struct file *filep, char *buffer, size_t length,
 	/* Number of bytes actually written to the buffer */
 	int result = 0;
 	// char *msgp = msg;
-	int i, tmp;
+	int i, tmp, flag;
 	unsigned char buf;
 
-	tmp = kstrtoint(msg, 10, &tmp);
-	for (i=0; i<4; i++) {
+	flag = kstrtoint(msg, 10, &tmp);
+	if (!flag){
+		for (i=0; i<4; i++) {
 		result += tmp%10;
 		tmp /= 10;
+		}
+	} else {
+		return 0;
 	}
 
 	buf = result;
