@@ -119,7 +119,8 @@ void __exit kernel_timer_exit(void)
 	kernel_timer_usage = 0;
 
 	// jgh start
-	printk("%c\n",  buff[0]);
+	printk("%d\n",  buff[0]);
+	kfree(buff);
 
 	del_timer_sync(&mydata.timer);
 
