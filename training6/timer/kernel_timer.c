@@ -23,8 +23,8 @@ static struct file_operations kernel_timer_fops =
 
 static struct struct_mydata {
 	struct timer_list timer;
+	int called_num;
 	int count;
-	int num; // jgh
 };
 
 struct struct_mydata mydata;
@@ -49,8 +49,8 @@ static void kernel_timer_blink(unsigned long timeout) {
 
 	printk("kernel_timer_blink %d\n", p_data->count);
 
-	p_data->num = p_data->num + 1; // jgh
-	buff[0] = p_data->num; // jgh
+	p_data->called_called_num = p_data->called_called_num + 1; // jgh
+	buff[0] = p_data->called_called_num; // jgh
 
 	p_data->count--; // jgh
 	if( p_data->count < 0 ) { // jgh
@@ -75,7 +75,7 @@ ssize_t kernel_timer_write(struct file *inode, const char *gdata, size_t length,
 	}
 
 	mydata.count = kernel_timer_buff;
-	mydata.num = 0; // jgh
+	mydata.called_num = 0; // jgh
 
 	printk("data  : %d \n",mydata.count);
 
