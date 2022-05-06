@@ -4,12 +4,14 @@
 #include <linux/platform_device.h>
 #include <linux/kernel.h>
 #include <linux/uaccess.h>
+#include <linux/slab.h> // jgh
 
 #define KERNEL_TIMER_MAJOR 268 
 #define KERNEL_TIMER_MINOR 0
 #define KERNEL_TIMER_NAME "kernel_timer"
 
 static int kernel_timer_usage = 0;
+static char *buff; // jgh
 
 int kernel_timer_open(struct inode *, struct file *);
 int kernel_timer_release(struct inode *, struct file *);
@@ -22,6 +24,7 @@ static struct file_operations kernel_timer_fops =
 static struct struct_mydata {
 	struct timer_list timer;
 	int count;
+	int num; // jgh
 };
 
 struct struct_mydata mydata;
@@ -46,12 +49,15 @@ static void kernel_timer_blink(unsigned long timeout) {
 
 	printk("kernel_timer_blink %d\n", p_data->count);
 
-	p_data->count++;
-	if( p_data->count > 15 ) {
+	p_data->num = p_data->num + 1; // jgh
+	buff[0] = p_data->num; // jgh
+
+	p_data->count--; // jgh
+	if( p_data->count < 0 ) { // jgh
 		return;
 	}
 
-	mydata.timer.expires = get_jiffies_64() + (1 * HZ);
+	mydata.timer.expires = get_jiffies_64() + (3 * HZ);
 	mydata.timer.data = (unsigned long)&mydata;
 	mydata.timer.function = kernel_timer_blink;
 
@@ -69,6 +75,7 @@ ssize_t kernel_timer_write(struct file *inode, const char *gdata, size_t length,
 	}
 
 	mydata.count = kernel_timer_buff;
+	mydata.num = 0; // jgh
 
 	printk("data  : %d \n",mydata.count);
 
@@ -99,6 +106,8 @@ int __init kernel_timer_init(void)
 
 	init_timer(&(mydata.timer));
 
+	buff = kmalloc(1 * PAGE_SIZE, GFP_KERNEL); // jgh
+
 	printk("init module\n");
 	return 0;
 }
@@ -107,6 +116,10 @@ void __exit kernel_timer_exit(void)
 {
 	printk("kernel_timer_exit\n");
 	kernel_timer_usage = 0;
+
+	// jgh start
+	printk("%c\n",  buff[0]);
+
 	del_timer_sync(&mydata.timer);
 
 	unregister_chrdev(KERNEL_TIMER_MAJOR, KERNEL_TIMER_NAME);
