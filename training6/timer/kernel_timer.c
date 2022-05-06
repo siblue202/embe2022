@@ -49,8 +49,8 @@ static void kernel_timer_blink(unsigned long timeout) {
 
 	printk("kernel_timer_blink %d\n", p_data->count);
 
-	p_data->called_called_num = p_data->called_called_num + 1; // jgh
-	buff[0] = p_data->called_called_num; // jgh
+	p_data->called_num = p_data->called_num + 1; // jgh
+	buff[0] = p_data->called_num; // jgh
 
 	p_data->count--; // jgh
 	if( p_data->count < 0 ) { // jgh
