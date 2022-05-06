@@ -50,7 +50,6 @@ static void kernel_timer_blink(unsigned long timeout) {
 	printk("kernel_timer_blink %d\n", p_data->count);
 
 	p_data->called_num = p_data->called_num + 1; // jgh
-	printk("debug called_num : %c \n", p_data->called_num); // debug
 	buff[0] = p_data->called_num; // jgh
 
 	p_data->count--; // jgh
@@ -121,6 +120,7 @@ void __exit kernel_timer_exit(void)
 	// jgh start
 	printk("%d\n",  buff[0]);
 	kfree(buff);
+	// jgh end
 
 	del_timer_sync(&mydata.timer);
 
