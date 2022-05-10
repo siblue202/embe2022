@@ -113,7 +113,7 @@ static void kernel_timer_function(unsigned long data) {
 		printk("[kernel_timer_function 0] : %c\n", value[0]);
 		printk("[kernel_timer_function 0] : %c\n", value[1]);
 		printk("[kernel_timer_function 0] : %c\n", value[2]);
-		printk("[kernel_timer_function 0] : %c\n", value[3]);
+		printk("[kernel_timer_function 0] : %u\n", value[3]);
 
 		// device control
 		iom_fpga_fnd_write(value);
