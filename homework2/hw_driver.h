@@ -1,8 +1,8 @@
-#ifndef HW_DRIVER_H_
-#define HW_DRIVER_H_
+#ifndef __HW_DRIVER_H__
+#define __HW_DRIVER_H__
 #include <asm/ioctl.h>
   
-struct ioctl_info{
+struct ioctl_info {
        unsigned long interval;
        unsigned long cnt;
        unsigned char[4] init;
