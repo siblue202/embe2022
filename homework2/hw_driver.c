@@ -56,10 +56,10 @@ ssize_t iom_fpga_fnd_write(unsigned char *gdata)
 	// if (copy_from_user(&value, tmp, 4))
 	// 	return -EFAULT;
 	memcpy(&value, gdata, sizeof(value));
-	printk("[iom_fpga_fnd_write 0] : %c\n", value[0]);
-	printk("[iom_fpga_fnd_write 0] : %c\n", value[1]);
-	printk("[iom_fpga_fnd_write 0] : %c\n", value[2]);
-	printk("[iom_fpga_fnd_write 0] : %c\n", value[3]);
+	printk("[iom_fpga_fnd_write 0] : %u\n", value[0]);
+	printk("[iom_fpga_fnd_write 1] : %u\n", value[1]);
+	printk("[iom_fpga_fnd_write 2] : %u\n", value[2]);
+	printk("[iom_fpga_fnd_write 3] : %u\n", value[3]);
 
     value_short = value[0] << 12 | value[1] << 8 |value[2] << 4 |value[3];
     outw(value_short,(unsigned int)iom_fpga_fnd_addr);	    
@@ -92,7 +92,6 @@ static void kernel_timer_function(unsigned long data) {
 	int index_init;
 	unsigned char value[4];
 
-	printk("timer count check : %d\n", p_data->cnt);
 	// count check
 	p_data->cnt--;
 	if( (int)p_data->cnt < 0 ) {
@@ -110,10 +109,10 @@ static void kernel_timer_function(unsigned long data) {
 		}
 		memcpy(p_data->init, &value, sizeof(value));
 
-		printk("[kernel_timer_function 0] : %c\n", value[0]);
-		printk("[kernel_timer_function 0] : %c\n", value[1]);
-		printk("[kernel_timer_function 0] : %c\n", value[2]);
-		printk("[kernel_timer_function 0] : %u\n", value[3]);
+		printk("[kernel_timer_function 0] : %u\n", value[0]);
+		printk("[kernel_timer_function 1] : %u\n", value[1]);
+		printk("[kernel_timer_function 2] : %u\n", value[2]);
+		printk("[kernel_timer_function 3] : %u\n", value[3]);
 
 		// device control
 		iom_fpga_fnd_write(value);
