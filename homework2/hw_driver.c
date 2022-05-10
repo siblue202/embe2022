@@ -65,7 +65,8 @@ ssize_t iom_fpga_fnd_write(unsigned char *gdata)
 
 int check_index(unsigned char *gdata){
 	unsigned char value[4];
-	value = gdata;
+	// value = gdata;
+	memset(value, *gdata, 4*sizeof(char));
 	int i, index;
 
 	for (i=0; i<4; i++){
@@ -93,12 +94,14 @@ static void kernel_timer_function(unsigned long data) {
 	}
 
 	// data's init data change
-	value = p_data->init;
+	// value = p_data->init;
+	memset(value, *(p_data->init), 4*sizeof(char));
 	index_init = check_index(p_data->init); 
 	value[index_init] = value[index_init]+1;
 	if (value[index_init] > 8) {
 		value[index_init] = 1;
 	}
+	memset(p_data->init, value, 4*sizeof(char));
 	p_data->init = value;
 
 	// device control
@@ -127,9 +130,9 @@ int kernel_timer_ioctl(struct inode * minode, struct file * mfile, unsigned int 
 			if (copy_from_user(&mydata, (void __user *)arg, sizeof(mydata))) {
 				return -EFAULT;
 			}
-			printk("[TIMER_INTERVAL] : \n", mydata.interval);
-    		printk("[TIMER_CNT] : \n", mydata.cnt);
-    		printk("[TIMER_INIT] : \n", mydata.init);
+			printk("[TIMER_INTERVAL] : %d\n", mydata.interval);
+    		printk("[TIMER_CNT] : %d\n", mydata.cnt);
+    		printk("[TIMER_INIT] : %d\n", mydata.init);
 
 			del_timer_sync(&timer);
 
