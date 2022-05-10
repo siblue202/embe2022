@@ -31,7 +31,7 @@ static struct file_operations kernel_timer_fops =
   .unlocked_ioctl = kernel_timer_ioctl,
   .release = kernel_timer_release };
 
-static struct ioctl_info mydata;
+static struct Ioctl_info mydata;
 static struct timer_list timer;
 
 static int kernel_timer_usage = 0;
@@ -66,11 +66,11 @@ ssize_t iom_fpga_fnd_write(unsigned char *gdata)
 
 int check_index(unsigned char *gdata){
 	unsigned char value[4];
-	// value = gdata;
-	memset(value, *gdata, 4*sizeof(char));
 	int i;
 	int index;
-
+	// value = gdata;
+	memset(value, *gdata, 4*sizeof(char));
+	
 	for (i=0; i<4; i++){
 		if(value[i] != 0){
 			index = i;
@@ -85,7 +85,7 @@ int check_index(unsigned char *gdata){
 /***************************** TIMER FUNCTION *****************************/
 
 static void kernel_timer_function(unsigned long data) {
-	struct ioctl_info *p_data = (struct ioctl_info*)data;
+	struct Ioctl_info *p_data = (struct Ioctl_info*)data;
 	int index_init;
 	unsigned char value[4];
 

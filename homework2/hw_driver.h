@@ -2,11 +2,11 @@
 #define __HW_DRIVER_H__
 #include <asm/ioctl.h>
   
-struct ioctl_info {
+typedef struct Ioctl_info{
        unsigned long interval;
        unsigned long cnt;
        unsigned char init[4];
-};
+}Ioctl_info;
    
 #define             IOCTL_MAGIC         'T'
 #define             SET_OPTION          _IOWR(IOCTL_MAGIC, 2 ,struct ioctl_info)

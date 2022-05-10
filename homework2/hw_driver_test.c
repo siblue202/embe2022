@@ -3,14 +3,15 @@
 #include <unistd.h>
 #include <asm/ioctl.h>
 #include <string.h>
+#include <fcntl.h>
 #include "hw_driver.h"
 
 #define     KERNEL_TIMER_NAME       "/dev/dev_driver"
 
 int main(int argc, char **argv){
     int timer_fd;
-    struct ioctl_info set_option;
-    struct ioctl_info command;
+    struct Ioctl_info set_option;
+    struct Ioctl_info command;
 
     if (argc != 4) {
         printf("Usage : [TIMER_INTERVAL] [TIMER_CNT] [TIMER_INIT]\n");
@@ -25,7 +26,8 @@ int main(int argc, char **argv){
 
     set_option.interval = atoi(argv[1]);
     set_option.cnt = atoi(argv[2]);
-    set_option.init = argv[3];
+    // set_option.init = atoi(argv[3]);
+    memset(set_option.init, argv[3], 4);
     printf("[TIMER_INTERVAL] : \n", set_option.interval);
     printf("[TIMER_CNT] : \n", set_option.cnt);
     printf("[TIMER_INIT] : \n", set_option.init);
