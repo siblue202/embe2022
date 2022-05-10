@@ -23,7 +23,7 @@ static struct file_operations kernel_timer_fops =
 
 static struct struct_mydata {
 	struct timer_list timer;
-	int called_num;
+	int called_num; // jgh
 	int count;
 };
 
