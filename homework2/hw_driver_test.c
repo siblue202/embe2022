@@ -12,6 +12,7 @@ int main(int argc, char **argv){
     int timer_fd;
     struct Ioctl_info set_option;
     struct Ioctl_info command;
+    int i;
 
     if (argc != 4) {
         printf("Usage : [TIMER_INTERVAL] [TIMER_CNT] [TIMER_INIT]\n");
@@ -26,8 +27,9 @@ int main(int argc, char **argv){
 
     set_option.interval = atoi(argv[1]);
     set_option.cnt = atoi(argv[2]);
-    // set_option.init = atoi(argv[3]);
-    memcpy(set_option.init, argv[3], sizeof(set_option.init));
+    for(i=0; i<4; i++){
+        set_option.init[i] = (unsigned char)argv[3][i];
+    }
 
     printf("[TIMER_INTERVAL] : %d \n", set_option.interval);
     printf("[TIMER_CNT] : %d \n", set_option.cnt);
