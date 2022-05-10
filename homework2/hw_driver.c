@@ -56,7 +56,7 @@ ssize_t iom_fpga_fnd_write(unsigned char *gdata)
 	// if (copy_from_user(&value, tmp, 4))
 	// 	return -EFAULT;
 	memcpy(&value, gdata, sizeof(value));
-	printk("[iom_fpga_fnd_write 0]1234 : %c\n", value[0]);
+	printk("[iom_fpga_fnd_write 0] : %c\n", value[0]);
 	printk("[iom_fpga_fnd_write 0] : %c\n", value[1]);
 	printk("[iom_fpga_fnd_write 0] : %c\n", value[2]);
 	printk("[iom_fpga_fnd_write 0] : %c\n", value[3]);
@@ -92,6 +92,7 @@ static void kernel_timer_function(unsigned long data) {
 	int index_init;
 	unsigned char value[4];
 
+	printk("timer count check : %d\n", p_data->cnt);
 	// count check
 	p_data->cnt--;
 	if( p_data->cnt < 0 ) {
