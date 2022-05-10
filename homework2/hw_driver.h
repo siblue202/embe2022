@@ -3,9 +3,9 @@
 #include <asm/ioctl.h>
   
 typedef struct Ioctl_info{
-       unsigned long interval;
-       unsigned long cnt;
-       unsigned int init[4];
+       unsigned int interval;
+       unsigned int cnt;
+       unsigned char init[4];
 }Ioctl_info;
    
 #define             IOCTL_MAGIC         'T'

@@ -26,11 +26,12 @@ int main(int argc, char **argv){
 
     set_option.interval = atoi(argv[1]);
     set_option.cnt = atoi(argv[2]);
-    set_option.init = atoi(argv[3]);
+    // set_option.init = atoi(argv[3]);
+    memcpy(set_option.init, argv[3], sizeof(set_option.init));
 
     printf("[TIMER_INTERVAL] : %d \n", set_option.interval);
     printf("[TIMER_CNT] : %d \n", set_option.cnt);
-    printf("[TIMER_INIT] : %d \n", set_option.init);
+    printf("[TIMER_INIT] : %u \n", set_option.init);
 
     if (ioctl(timer_fd, SET_OPTION, &set_option) < 0) {
         printf("Error : SET_OPTION\n");
