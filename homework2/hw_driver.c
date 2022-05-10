@@ -23,7 +23,7 @@
 
 int kernel_timer_open(struct inode *, struct file *);
 int kernel_timer_release(struct inode *, struct file *);
-int kernel_timer_ioctl(struct inode *, struct file *, unsigned int, unsigned long);
+int kernel_timer_ioctl(struct file *, unsigned int, unsigned long);
 static void kernel_timer_function(unsigned long);
 
 static struct file_operations kernel_timer_fops =
@@ -137,7 +137,7 @@ static void kernel_timer_function(unsigned long data) {
 /***************************** MODULE IOCTL *****************************/
 
 
-int kernel_timer_ioctl(struct inode * minode, struct file * mfile, unsigned int cmd, unsigned long arg){
+int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg){
 	printk("The kernel_timer_ioctl() function has been called\n");
 	
 	switch (cmd) {
