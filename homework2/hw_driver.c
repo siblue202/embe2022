@@ -103,6 +103,7 @@ static void kernel_timer_function(unsigned long data) {
 		memcpy(&value, p_data->init, sizeof(value));
 
 		index_init = check_index(p_data->init); 
+		printk("check index_init : %d \n", index_init);
 		value[index_init] = value[index_init]+1;
 		if (value[index_init] > 8) {
 			value[index_init] = 1;
