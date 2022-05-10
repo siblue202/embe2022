@@ -54,7 +54,8 @@ ssize_t iom_fpga_fnd_write(unsigned char *gdata)
 
 	// if (copy_from_user(&value, tmp, 4))
 	// 	return -EFAULT;
-	value = gdata;
+	// value = gdata;
+	memset(value, *gdata, 4*sizeof(char));
 
     value_short = value[0] << 12 | value[1] << 8 |value[2] << 4 |value[3];
     outw(value_short,(unsigned int)iom_fpga_fnd_addr);	    
