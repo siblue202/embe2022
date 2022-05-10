@@ -72,7 +72,7 @@ int check_index(unsigned char *gdata){
 	int i;
 	int index = -1;
 
-	memcpy(value, gdata, sizeof(value));
+	memcpy(&value, gdata, sizeof(value));
 	
 	for (i=0; i<4; i++){
 		if(value[i] != 0){
@@ -95,19 +95,19 @@ static void kernel_timer_function(unsigned long data) {
 	printk("timer count check : %d\n", p_data->cnt);
 	// count check
 	p_data->cnt--;
-	if( p_data->cnt < 0 ) {
-		del_timer_sync(&timer);
+	if( (int)p_data->cnt < 0 ) {
+		del_timer(&timer);
 		return;
 	} else {
 		// p_data's init data change
-		memcpy(value, p_data->init, sizeof(value));
+		memcpy(&value, p_data->init, sizeof(value));
 
 		index_init = check_index(p_data->init); 
 		value[index_init] = value[index_init]+1;
 		if (value[index_init] > 8) {
 			value[index_init] = 1;
 		}
-		memcpy(p_data->init, value, sizeof(value));
+		memcpy(p_data->init, &value, sizeof(value));
 
 		printk("[kernel_timer_function 0] : %c\n", value[0]);
 		printk("[kernel_timer_function 0] : %c\n", value[1]);
