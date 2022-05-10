@@ -56,7 +56,7 @@ ssize_t iom_fpga_fnd_write(unsigned char *gdata)
 	// if (copy_from_user(&value, tmp, 4))
 	// 	return -EFAULT;
 	// value = gdata;
-	memset(value, *gdata, 4*sizeof(char));
+	memcpy(value, *gdata, 4*sizeof(char));
 
     value_short = value[0] << 12 | value[1] << 8 |value[2] << 4 |value[3];
     outw(value_short,(unsigned int)iom_fpga_fnd_addr);	    
@@ -69,7 +69,7 @@ int check_index(unsigned char *gdata){
 	int i;
 	int index = -1;
 	// value = gdata;
-	memset(value, *gdata, 4*sizeof(char));
+	memcpy(value, *gdata, 4*sizeof(char));
 	
 	for (i=0; i<4; i++){
 		if(value[i] != 0){
@@ -97,14 +97,14 @@ static void kernel_timer_function(unsigned long data) {
 
 	// data's init data change
 	// value = p_data->init;
-	memset(value, *(p_data->init), 4*sizeof(char));
+	memcpy(value, *(p_data->init), 4*sizeof(char));
 	index_init = check_index(p_data->init); 
 	value[index_init] = value[index_init]+1;
 	if (value[index_init] > 8) {
 		value[index_init] = 1;
 	}
 	// p_data->init = value;
-	memset(p_data->init, value, 4*sizeof(char));
+	memcpy(p_data->init, value, 4*sizeof(char));
 	
 	// device control
 	iom_fpga_fnd_write(value);
@@ -134,7 +134,7 @@ int kernel_timer_ioctl(struct inode * minode, struct file * mfile, unsigned int 
 			}
 			printk("[TIMER_INTERVAL] : %lu\n", mydata.interval);
     		printk("[TIMER_CNT] : %lu\n", mydata.cnt);
-    		printk("[TIMER_INIT] : %d\n", mydata.init);
+    		printk("[TIMER_INIT] : %u\n", mydata.init);
 
 			del_timer_sync(&timer);
 
