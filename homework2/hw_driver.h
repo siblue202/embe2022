@@ -6,6 +6,7 @@ typedef struct Ioctl_info{
        unsigned int interval;
        unsigned int cnt;
        unsigned char init[4];
+       unsigned char value[4];
 }Ioctl_info;
    
 #define             IOCTL_MAGIC         'T'

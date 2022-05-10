@@ -30,6 +30,7 @@ int main(int argc, char **argv){
     for(i=0; i<4; i++){
         set_option.init[i] = (unsigned char)argv[3][i] - 0x30;
     }
+    set_option.value = set_option.init;
 
     printf("[TIMER_INTERVAL] : %d \n", set_option.interval);
     printf("[TIMER_CNT] : %d \n", set_option.cnt);

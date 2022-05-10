@@ -89,25 +89,36 @@ int check_index(unsigned char *gdata){
 
 static void kernel_timer_function(unsigned long data) {
 	struct Ioctl_info *p_data = (struct Ioctl_info*)data;
-	int index_init;
+	int index_value;
 	unsigned char value[4];
 
 	// count check
 	p_data->cnt--;
-	if( (int)p_data->cnt < 0 ) {
+	if( (int)p_data->cnt <= 0 ) {
 		del_timer(&timer);
 		return;
 	} else {
-		// p_data's init data change
-		memcpy(&value, p_data->init, sizeof(value));
+		// p_data's value data change
+		memcpy(&value, p_data->value, sizeof(value));
 
-		index_init = check_index(p_data->init); 
-		printk("check index_init : %d \n", index_init);
-		value[index_init] = value[index_init]+1;
-		if (value[index_init] > 8) {
-			value[index_init] = 1;
+		index_value = check_index(p_data->value); 
+		printk("check index_value : %d \n", index_value);
+		value[index_value] = value[index_value]+1;
+		if (value[index_value] > 8) {
+			value[index_value] = 1;
 		}
-		memcpy(p_data->init, &value, sizeof(value));
+		
+		if (value[index_value] == p_data->init[index_value]) {
+			if (index_value == 3){
+				value[0] = value[index_value];
+				value[index_value] = 0;
+			} else {
+				value[index_value+1] = value[index_value];
+				value[index_value] = 0;
+			}
+		}
+
+		memcpy(p_data->value, &value, sizeof(value));
 
 		printk("[kernel_timer_function 0] : %u\n", value[0]);
 		printk("[kernel_timer_function 1] : %u\n", value[1]);
@@ -151,7 +162,7 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 			del_timer_sync(&timer);
 
 			// FND INIT MODE
-			iom_fpga_fnd_write(mydata.init);
+			iom_fpga_fnd_write(mydata.value);
 
 			break;
 
