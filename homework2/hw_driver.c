@@ -27,7 +27,7 @@ int kernel_timer_ioctl(struct inode *, struct file *, unsigned int, unsigned lon
 static void kernel_timer_function(unsigned long);
 
 static struct file_operations kernel_timer_fops =
-{ .open = kernel_timer_open, .ioctl = kernel_timer_ioctl,
+{ .open = kernel_timer_open, .unlocked_ioctl = kernel_timer_ioctl,
 	.release = kernel_timer_release };
 
 static struct ioctl_info mydata;
