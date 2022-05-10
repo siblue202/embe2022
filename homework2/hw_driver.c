@@ -67,7 +67,7 @@ ssize_t iom_fpga_fnd_write(unsigned char *gdata)
 int check_index(unsigned char *gdata){
 	unsigned char value[4];
 	int i;
-	int index;
+	int index = -1;
 	// value = gdata;
 	memset(value, *gdata, 4*sizeof(char));
 	
