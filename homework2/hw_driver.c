@@ -83,7 +83,7 @@ int check_index(unsigned char *gdata){
 static void kernel_timer_function(unsigned long data) {
 	struct ioctl_info *p_data = (struct ioctl_info*)data;
 	int index_init;
-	unsigned char[4] value;
+	unsigned char value[4];
 
 	// count check
 	p_data->cnt--;

@@ -5,7 +5,7 @@
 struct ioctl_info {
        unsigned long interval;
        unsigned long cnt;
-       unsigned char[4] init;
+       unsigned char init[4];
 };
    
 #define             IOCTL_MAGIC         'T'
