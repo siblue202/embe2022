@@ -27,8 +27,9 @@ int kernel_timer_ioctl(struct inode *, struct file *, unsigned int, unsigned lon
 static void kernel_timer_function(unsigned long);
 
 static struct file_operations kernel_timer_fops =
-{ .open = kernel_timer_open, .unlocked_ioctl = kernel_timer_ioctl,
-	.release = kernel_timer_release };
+{ .open = kernel_timer_open,
+  .unlocked_ioctl = kernel_timer_ioctl,
+  .release = kernel_timer_release };
 
 static struct ioctl_info mydata;
 static struct timer_list timer;
@@ -67,7 +68,8 @@ int check_index(unsigned char *gdata){
 	unsigned char value[4];
 	// value = gdata;
 	memset(value, *gdata, 4*sizeof(char));
-	int i, index;
+	int i;
+	int index;
 
 	for (i=0; i<4; i++){
 		if(value[i] != 0){
@@ -101,9 +103,9 @@ static void kernel_timer_function(unsigned long data) {
 	if (value[index_init] > 8) {
 		value[index_init] = 1;
 	}
+	// p_data->init = value;
 	memset(p_data->init, value, 4*sizeof(char));
-	p_data->init = value;
-
+	
 	// device control
 	iom_fpga_fnd_write(value);
 
@@ -130,8 +132,8 @@ int kernel_timer_ioctl(struct inode * minode, struct file * mfile, unsigned int 
 			if (copy_from_user(&mydata, (void __user *)arg, sizeof(mydata))) {
 				return -EFAULT;
 			}
-			printk("[TIMER_INTERVAL] : %d\n", mydata.interval);
-    		printk("[TIMER_CNT] : %d\n", mydata.cnt);
+			printk("[TIMER_INTERVAL] : %lu\n", mydata.interval);
+    		printk("[TIMER_CNT] : %lu\n", mydata.cnt);
     		printk("[TIMER_INIT] : %d\n", mydata.init);
 
 			del_timer_sync(&timer);
