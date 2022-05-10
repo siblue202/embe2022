@@ -87,7 +87,6 @@ static void kernel_timer_function(unsigned long data) {
 	struct Ioctl_info *p_data = (struct Ioctl_info*)data;
 	int index_init;
 	unsigned char value[4];
-	int i;
 
 	// count check
 	p_data->cnt--;
@@ -96,14 +95,14 @@ static void kernel_timer_function(unsigned long data) {
 	}
 
 	// p_data's init data change
-	memcpy(value, &(p_data->init), sizeof(value));
+	memcpy(value, p_data->init, sizeof(value));
 
-	index_init = check_index(&(p_data->init)); 
+	index_init = check_index(p_data->init); 
 	value[index_init] = value[index_init]+1;
 	if (value[index_init] > 8) {
 		value[index_init] = 1;
 	}
-	memcpy(&(p_data->init), value, sizeof(value));
+	memcpy(p_data->init, value, sizeof(value));
 
 	// device control
 	iom_fpga_fnd_write(value);
