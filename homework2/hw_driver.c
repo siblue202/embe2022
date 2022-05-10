@@ -56,6 +56,10 @@ ssize_t iom_fpga_fnd_write(unsigned char *gdata)
 	// if (copy_from_user(&value, tmp, 4))
 	// 	return -EFAULT;
 	memcpy(value, gdata, sizeof(value));
+	printk("[iom_fpga_fnd_write 0] : %c\n", mydata.init[0]);
+	printk("[iom_fpga_fnd_write 0] : %c\n", mydata.init[1]);
+	printk("[iom_fpga_fnd_write 0] : %c\n", mydata.init[2]);
+	printk("[iom_fpga_fnd_write 0] : %c\n", mydata.init[3]);
 
     value_short = value[0] << 12 | value[1] << 8 |value[2] << 4 |value[3];
     outw(value_short,(unsigned int)iom_fpga_fnd_addr);	    
@@ -104,6 +108,11 @@ static void kernel_timer_function(unsigned long data) {
 	}
 	memcpy(p_data->init, value, sizeof(value));
 
+	printk("[kernel_timer_function 0] : %c\n", mydata.init[0]);
+	printk("[kernel_timer_function 0] : %c\n", mydata.init[1]);
+	printk("[kernel_timer_function 0] : %c\n", mydata.init[2]);
+	printk("[kernel_timer_function 0] : %c\n", mydata.init[3]);
+
 	// device control
 	iom_fpga_fnd_write(value);
 
@@ -132,7 +141,10 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 			}
 			printk("[TIMER_INTERVAL] : %d\n", mydata.interval);
     		printk("[TIMER_CNT] : %d\n", mydata.cnt);
-    		printk("[TIMER_INIT] : %u\n", mydata.init);
+    		printk("[TIMER_INIT 0] : %c\n", mydata.init[0]);
+			printk("[TIMER_INIT 1] : %c\n", mydata.init[1]);
+			printk("[TIMER_INIT 2] : %c\n", mydata.init[2]);
+			printk("[TIMER_INIT 3] : %c\n", mydata.init[3]);
 
 			del_timer_sync(&timer);
 
