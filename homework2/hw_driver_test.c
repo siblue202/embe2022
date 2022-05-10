@@ -28,15 +28,15 @@ int main(int argc, char **argv){
     set_option.interval = atoi(argv[1]);
     set_option.cnt = atoi(argv[2]);
     for(i=0; i<4; i++){
-        set_option.init[i] = (unsigned char)argv[3][i];
+        set_option.init[i] = (unsigned char)argv[3][i] - 0x30;
     }
 
     printf("[TIMER_INTERVAL] : %d \n", set_option.interval);
     printf("[TIMER_CNT] : %d \n", set_option.cnt);
-    printf("[TIMER_INIT] : %c \n", set_option.init[0]);
-    printf("[TIMER_INIT] : %c \n", set_option.init[1]);
-    printf("[TIMER_INIT] : %c \n", set_option.init[2]);
-    printf("[TIMER_INIT] : %c \n", set_option.init[3]);
+    printf("[TIMER_INIT] : %u \n", set_option.init[0]);
+    printf("[TIMER_INIT] : %u \n", set_option.init[1]);
+    printf("[TIMER_INIT] : %u \n", set_option.init[2]);
+    printf("[TIMER_INIT] : %u \n", set_option.init[3]);
 
     if (ioctl(timer_fd, SET_OPTION, &set_option) < 0) {
         printf("Error : SET_OPTION\n");

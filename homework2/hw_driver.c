@@ -143,10 +143,10 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 			}
 			printk("[TIMER_INTERVAL] : %d\n", mydata.interval);
     		printk("[TIMER_CNT] : %d\n", mydata.cnt);
-    		printk("[TIMER_INIT 0] : %c\n", mydata.init[0]);
-			printk("[TIMER_INIT 1] : %c\n", mydata.init[1]);
-			printk("[TIMER_INIT 2] : %c\n", mydata.init[2]);
-			printk("[TIMER_INIT 3] : %c\n", mydata.init[3]);
+    		printk("[TIMER_INIT 0] : %u\n", mydata.init[0]);
+			printk("[TIMER_INIT 1] : %u\n", mydata.init[1]);
+			printk("[TIMER_INIT 2] : %u\n", mydata.init[2]);
+			printk("[TIMER_INIT 3] : %u\n", mydata.init[3]);
 
 			del_timer_sync(&timer);
 
