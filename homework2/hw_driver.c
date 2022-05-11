@@ -221,7 +221,7 @@ static void kernel_timer_function(unsigned long data) {
 
 		// device control
 		iom_fpga_fnd_write(value);
-		iom_led_write(specific_data);
+		iom_led_write(&specific_data);
 		iom_fpga_dot_write(fpga_number[specific_data]);
 
 		// add timer 
