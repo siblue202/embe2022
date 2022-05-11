@@ -14,12 +14,17 @@
 #include <linux/delay.h>
 
 #include "hw_driver.h"
+#include "./fpga_dot_font.h"
 
 #define KERNEL_TIMER_MAJOR 242
 #define KERNEL_TIMER_MINOR 0
 #define KERNEL_TIMER_NAME "dev_driver"
 #define IOM_FND_ADDRESS 0x08000004 // pysical address, FND
 #define IOM_LED_ADDRESS 0x08000016 // pysical address, LED
+#define IOM_FPGA_DOT_ADDRESS 0x08000210 // pysical address, DOT
+#define IOM_FPGA_TEXT_LCD_ADDRESS 0x08000090 // pysical address - 32 Byte (16 * 2), TEXT_LCD
+
+
 
 
 /***************************** FOR TIMER *****************************/
@@ -43,10 +48,17 @@ static int kernel_timer_usage = 0;
 
 /***************************** FOR DEVICE *****************************/
 
-static unsigned char *iom_fpga_fnd_addr;	// FND
-static unsigned char fnd_init[4] = {0};		// FND
+static unsigned char *iom_fpga_fnd_addr;		// FND
+const unsigned char fnd_init[4] = {0};			// FND
 
-static unsigned char *iom_fpga_led_addr;	// LED
+static unsigned char *iom_fpga_led_addr;		// LED
+const unsigned char led_init = 0;				// LED
+
+static unsigned char *iom_fpga_dot_addr;		// DOT
+
+static unsigned char *iom_fpga_text_lcd_addr;	// TEXT_LCD
+
+
 
 
 /***************************** FOR DEVICE *****************************/
@@ -110,17 +122,70 @@ ssize_t iom_led_write(const char *gdata)
 
 /***************************** LED FUNCTION *****************************/
 
+/***************************** DOT FUNCTION *****************************/
+// when write to fpga_dot device  ,call this function
+ssize_t iom_fpga_dot_write(const char *gdata) 
+{
+	int i;
+
+	unsigned char value[10];
+	unsigned short int _s_value;
+	const char *tmp = gdata;
+
+	memcpy(&value, tmp, sizeof(value));
+
+	for(i=0;i<sizeof(value);i++)
+    {
+        _s_value = value[i] & 0x7F;
+		outw(_s_value,(unsigned int)iom_fpga_dot_addr+i*2);
+    }
+	
+	return sizeof(value);
+}
+/***************************** DOT FUNCTION *****************************/
+
+/***************************** TEXT_LCD FUNCTION *****************************/
+// when write to fpga_text_lcd device  ,call this function
+ssize_t iom_fpga_text_lcd_write(struct file *inode, const char *gdata, size_t length, loff_t *off_what) 
+{
+	int i;
+
+    unsigned short int _s_value = 0;
+	unsigned char value[33];
+	const char *tmp = gdata;
+
+	if (copy_from_user(&value, tmp, length))
+		return -EFAULT;
+
+	value[length]=0;
+	printk("Get Size : %d / String : %s\n",length,value);
+
+	for(i=0;i<length;i++)
+    {
+        _s_value = (value[i] & 0xFF) << 8 | value[i + 1] & 0xFF;
+		outw(_s_value,(unsigned int)iom_fpga_text_lcd_addr+i);
+        i++;
+    }
+
+	return length;
+}
+/***************************** TEXT_LCD FUNCTION *****************************/
+
 /***************************** TIMER FUNCTION *****************************/
 
 static void kernel_timer_function(unsigned long data) {
 	struct Ioctl_info *p_data = (struct Ioctl_info*)data;
 	int index_value;
+	unsigned char specific_data;
 	unsigned char value[4];
 
 	// count check
 	p_data->cnt--;
 	if( (int)p_data->cnt <= 0 ) {
 		iom_fpga_fnd_write(fnd_init);
+		iom_led_write(led_init);
+		iom_fpga_dot_write(&fpga_set_blank);
+
 		del_timer(&timer);
 		return;
 	} else {
@@ -143,6 +208,7 @@ static void kernel_timer_function(unsigned long data) {
 				value[index_value] = 0;
 			}
 		}
+		specific_data = value[index_value];
 
 		memcpy(p_data->value, &value, sizeof(value));
 
@@ -153,7 +219,8 @@ static void kernel_timer_function(unsigned long data) {
 
 		// device control
 		iom_fpga_fnd_write(value);
-		iom_led_write(value[index_value]);
+		iom_led_write(specific_data);
+		iom_fpga_dot_write(fpga_number[specific_data]);
 
 		// add timer 
 		timer.expires = get_jiffies_64() + (mydata.interval/10 * HZ);
@@ -248,8 +315,11 @@ int __init kernel_timer_init(void)
     printk( "dev_file : /dev/%s , major : %d\n",KERNEL_TIMER_NAME,KERNEL_TIMER_MAJOR);
 
 	init_timer(&timer); // TIMER
-	iom_fpga_fnd_addr = ioremap(IOM_FND_ADDRESS, 0x4);	// FND
-	iom_fpga_led_addr = ioremap(IOM_LED_ADDRESS, 0x1);	// LED
+	iom_fpga_fnd_addr = ioremap(IOM_FND_ADDRESS, 0x4);					// FND
+	iom_fpga_led_addr = ioremap(IOM_LED_ADDRESS, 0x1);					// LED
+	iom_fpga_dot_addr = ioremap(IOM_FPGA_DOT_ADDRESS, 0x10);			// DOT
+	iom_fpga_text_lcd_addr = ioremap(IOM_FPGA_TEXT_LCD_ADDRESS, 0x32);	// TEXT_LCD
+
 
 	printk("init module\n");
 	return 0;
@@ -260,8 +330,10 @@ void __exit kernel_timer_exit(void)
 	printk("kernel_timer_exit\n");
 
 	del_timer_sync(&timer); // TIMER
-	iounmap(iom_fpga_fnd_addr);	// FND
-	iounmap(iom_fpga_led_addr);	// LED
+	iounmap(iom_fpga_fnd_addr);			// FND
+	iounmap(iom_fpga_led_addr);			// LED
+	iounmap(iom_fpga_dot_addr);			// DOT
+	iounmap(iom_fpga_text_lcd_addr);	// TEXT_LCD
 
 	unregister_chrdev(KERNEL_TIMER_MAJOR, KERNEL_TIMER_NAME);
 }
