@@ -49,10 +49,10 @@ static int kernel_timer_usage = 0;
 /***************************** FOR DEVICE *****************************/
 
 static unsigned char *iom_fpga_fnd_addr;		// FND
-const unsigned char fnd_init[4] = {0};			// FND
+static unsigned char fnd_init[4] = {0};			// FND
 
 static unsigned char *iom_fpga_led_addr;		// LED
-const unsigned char led_init = 0;				// LED
+static unsigned char led_init = 0;				// LED
 
 static unsigned char *iom_fpga_dot_addr;		// DOT
 
