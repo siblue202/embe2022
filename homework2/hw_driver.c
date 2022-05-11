@@ -145,6 +145,7 @@ ssize_t iom_fpga_dot_write(const char *gdata)
 /***************************** DOT FUNCTION *****************************/
 
 /***************************** TEXT_LCD FUNCTION *****************************/
+/*
 // when write to fpga_text_lcd device  ,call this function
 ssize_t iom_fpga_text_lcd_write(struct file *inode, const char *gdata, size_t length, loff_t *off_what) 
 {
@@ -169,6 +170,7 @@ ssize_t iom_fpga_text_lcd_write(struct file *inode, const char *gdata, size_t le
 
 	return length;
 }
+*/
 /***************************** TEXT_LCD FUNCTION *****************************/
 
 /***************************** TIMER FUNCTION *****************************/
