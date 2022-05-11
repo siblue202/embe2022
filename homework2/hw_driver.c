@@ -8,6 +8,7 @@
 #include <linux/slab.h>
 
 #include <asm/io.h> // FND
+#include <asm/uaccess.h> // LED
 #include <linux/ioport.h>
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -18,6 +19,8 @@
 #define KERNEL_TIMER_MINOR 0
 #define KERNEL_TIMER_NAME "dev_driver"
 #define IOM_FND_ADDRESS 0x08000004 // pysical address, FND
+#define IOM_LED_ADDRESS 0x08000016 // pysical address, LED
+
 
 /***************************** FOR TIMER *****************************/
 
@@ -38,11 +41,15 @@ static int kernel_timer_usage = 0;
 
 /***************************** FOR TIMER *****************************/
 
-/***************************** FOR FND *****************************/
+/***************************** FOR DEVICE *****************************/
 
-static unsigned char *iom_fpga_fnd_addr;
+static unsigned char *iom_fpga_fnd_addr;	// FND
+static unsigned char fnd_init[4] = {0};		// FND
 
-/***************************** FOR FND *****************************/
+static unsigned char *iom_fpga_led_addr;	// LED
+
+
+/***************************** FOR DEVICE *****************************/
 
 /***************************** FND FUNCTION *****************************/
 // when write to fnd device  ,call this function
@@ -84,6 +91,24 @@ int check_index(unsigned char *gdata){
 }
 /***************************** FND FUNCTION *****************************/
 
+/***************************** LED FUNCTION *****************************/
+
+// when write to led device  ,call this function
+ssize_t iom_led_write(const char *gdata) 
+{
+	unsigned char value;
+	unsigned short _s_value;
+	const char *tmp = gdata;
+
+	memcpy(&value, tmp, sizeof(value));
+
+    _s_value = (unsigned short)value;
+    outw(_s_value, (unsigned int)iom_fpga_led_addr);
+
+	return sizeof(value);
+}
+
+/***************************** LED FUNCTION *****************************/
 
 /***************************** TIMER FUNCTION *****************************/
 
@@ -95,6 +120,7 @@ static void kernel_timer_function(unsigned long data) {
 	// count check
 	p_data->cnt--;
 	if( (int)p_data->cnt <= 0 ) {
+		iom_fpga_fnd_write(fnd_init);
 		del_timer(&timer);
 		return;
 	} else {
@@ -127,6 +153,7 @@ static void kernel_timer_function(unsigned long data) {
 
 		// device control
 		iom_fpga_fnd_write(value);
+		iom_led_write(value[index_value]);
 
 		// add timer 
 		timer.expires = get_jiffies_64() + (mydata.interval/10 * HZ);
@@ -221,7 +248,8 @@ int __init kernel_timer_init(void)
     printk( "dev_file : /dev/%s , major : %d\n",KERNEL_TIMER_NAME,KERNEL_TIMER_MAJOR);
 
 	init_timer(&timer); // TIMER
-	iom_fpga_fnd_addr = ioremap(IOM_FND_ADDRESS, 0x4); // FND
+	iom_fpga_fnd_addr = ioremap(IOM_FND_ADDRESS, 0x4);	// FND
+	iom_fpga_led_addr = ioremap(IOM_LED_ADDRESS, 0x1);	// LED
 
 	printk("init module\n");
 	return 0;
@@ -232,7 +260,8 @@ void __exit kernel_timer_exit(void)
 	printk("kernel_timer_exit\n");
 
 	del_timer_sync(&timer); // TIMER
-	iounmap(iom_fpga_fnd_addr); // FND
+	iounmap(iom_fpga_fnd_addr);	// FND
+	iounmap(iom_fpga_led_addr);	// LED
 
 	unregister_chrdev(KERNEL_TIMER_MAJOR, KERNEL_TIMER_NAME);
 }
