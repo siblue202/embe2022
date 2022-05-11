@@ -186,7 +186,7 @@ static void kernel_timer_function(unsigned long data) {
 	if( (int)p_data->cnt <= 0 ) {
 		iom_fpga_fnd_write(fnd_init);
 		iom_led_write(&led_init);
-		iom_fpga_dot_write(&fpga_set_blank);
+		iom_fpga_dot_write(fpga_set_blank);
 
 		del_timer(&timer);
 		return;
