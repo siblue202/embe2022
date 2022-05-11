@@ -52,7 +52,7 @@ static unsigned char *iom_fpga_fnd_addr;		// FND
 static unsigned char fnd_init[4] = {0};			// FND
 
 static unsigned char *iom_fpga_led_addr;		// LED
-static unsigned char led_init = 0;				// LED
+static unsigned char led_init = (unsigned char)0;				// LED
 
 static unsigned char *iom_fpga_dot_addr;		// DOT
 
@@ -106,7 +106,7 @@ int check_index(unsigned char *gdata){
 /***************************** LED FUNCTION *****************************/
 
 // when write to led device  ,call this function
-ssize_t iom_led_write(const char *gdata) 
+ssize_t iom_led_write(unsigned char *gdata) 
 {
 	unsigned char value;
 	unsigned short _s_value;
@@ -124,7 +124,7 @@ ssize_t iom_led_write(const char *gdata)
 
 /***************************** DOT FUNCTION *****************************/
 // when write to fpga_dot device  ,call this function
-ssize_t iom_fpga_dot_write(const char *gdata) 
+ssize_t iom_fpga_dot_write(unsigned char *gdata) 
 {
 	int i;
 
