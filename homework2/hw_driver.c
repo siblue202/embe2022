@@ -197,7 +197,7 @@ static void kernel_timer_function(unsigned long data) {
 	int index_value;
 	unsigned char specific_data;
 	unsigned char value[4];
-	unsigned char string_lcd[32];
+	// unsigned char string_lcd[32];
 
 	// count check
 	p_data->cnt--;
@@ -348,7 +348,7 @@ int __init kernel_timer_init(void)
 	iom_fpga_fnd_addr = ioremap(IOM_FND_ADDRESS, 0x4);					// FND
 	iom_fpga_led_addr = ioremap(IOM_LED_ADDRESS, 0x1);					// LED
 	iom_fpga_dot_addr = ioremap(IOM_FPGA_DOT_ADDRESS, 0x10);			// DOT
-	iom_fpga_text_lcd_addr = ioremap(IOM_FPGA_TEXT_LCD_ADDRESS, 0x32);	// TEXT_LCD
+	// iom_fpga_text_lcd_addr = ioremap(IOM_FPGA_TEXT_LCD_ADDRESS, 0x32);	// TEXT_LCD
 
 
 	printk("init module\n");
@@ -363,7 +363,7 @@ void __exit kernel_timer_exit(void)
 	iounmap(iom_fpga_fnd_addr);			// FND
 	iounmap(iom_fpga_led_addr);			// LED
 	iounmap(iom_fpga_dot_addr);			// DOT
-	iounmap(iom_fpga_text_lcd_addr);	// TEXT_LCD
+	// iounmap(iom_fpga_text_lcd_addr);	// TEXT_LCD
 
 	unregister_chrdev(KERNEL_TIMER_MAJOR, KERNEL_TIMER_NAME);
 }
