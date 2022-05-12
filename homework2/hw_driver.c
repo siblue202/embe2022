@@ -12,6 +12,7 @@
 #include <linux/ioport.h>
 #include <linux/module.h>
 #include <linux/delay.h>
+#include <linux/string.h> // TEXT_LCD
 
 #include "hw_driver.h"
 #include "./fpga_dot_font.h"
@@ -19,10 +20,12 @@
 #define KERNEL_TIMER_MAJOR 242
 #define KERNEL_TIMER_MINOR 0
 #define KERNEL_TIMER_NAME "dev_driver"
-#define IOM_FND_ADDRESS 0x08000004 // pysical address, FND
-#define IOM_LED_ADDRESS 0x08000016 // pysical address, LED
-#define IOM_FPGA_DOT_ADDRESS 0x08000210 // pysical address, DOT
-#define IOM_FPGA_TEXT_LCD_ADDRESS 0x08000090 // pysical address - 32 Byte (16 * 2), TEXT_LCD
+#define IOM_FND_ADDRESS 0x08000004 				// pysical address, FND
+#define IOM_LED_ADDRESS 0x08000016 				// pysical address, LED
+#define IOM_FPGA_DOT_ADDRESS 0x08000210 		// pysical address, DOT
+#define IOM_FPGA_TEXT_LCD_ADDRESS 0x08000090	// pysical address - 32 Byte (16 * 2), TEXT_LCD
+#define MAX_BUFF 32								// TEXT_LCD
+#define LINE_BUFF 16							// TEXT_LCD
 
 
 
@@ -48,15 +51,17 @@ static int kernel_timer_usage = 0;
 
 /***************************** FOR DEVICE *****************************/
 
-static unsigned char *iom_fpga_fnd_addr;		// FND
-static unsigned char fnd_init[4] = {0};			// FND
+static unsigned char *iom_fpga_fnd_addr;				// FND
+static unsigned char fnd_init[4] = {0};					// FND
 
-static unsigned char *iom_fpga_led_addr;		// LED
-static unsigned char led_init = (unsigned char)0;				// LED
+static unsigned char *iom_fpga_led_addr;				// LED
+static unsigned char led_init = (unsigned char)0;		// LED
 
-static unsigned char *iom_fpga_dot_addr;		// DOT
+static unsigned char *iom_fpga_dot_addr;				// DOT
 
-static unsigned char *iom_fpga_text_lcd_addr;	// TEXT_LCD
+static unsigned char *iom_fpga_text_lcd_addr;			// TEXT_LCD
+static unsigned char line_1[LINE_BUFF];					// TEXT_LCD
+static unsigned char line_2[LINE_BUFF];					// TEXT_LCD
 
 
 
@@ -145,9 +150,9 @@ ssize_t iom_fpga_dot_write(unsigned char *gdata)
 /***************************** DOT FUNCTION *****************************/
 
 /***************************** TEXT_LCD FUNCTION *****************************/
-/*
+
 // when write to fpga_text_lcd device  ,call this function
-ssize_t iom_fpga_text_lcd_write(struct file *inode, const char *gdata, size_t length, loff_t *off_what) 
+ssize_t iom_fpga_text_lcd_write(unsigned char *gdata) 
 {
 	int i;
 
@@ -168,9 +173,26 @@ ssize_t iom_fpga_text_lcd_write(struct file *inode, const char *gdata, size_t le
         i++;
     }
 
-	return length;
+	return sizeof(value);
 }
-*/
+
+char* shift_text(unsigned char *gdata){
+	unsigned char value[LINE_BUFF];
+	unsigned char tmp_value[LINE_BUFF];
+	const char *tmp = gdata;
+	int i;
+
+	memcpy(&value, tmp, LINE_BUFF);
+	memcpy(&tmp_value, tmp, LINE_BUFF);
+
+	for (i=0; i<LINE_BUFF-1; i++){
+		value[i+1] = value[i];
+	}
+	value[i] = tmp_value[LINE_BUFF-1];
+
+	return value;
+}
+
 /***************************** TEXT_LCD FUNCTION *****************************/
 
 /***************************** TIMER FUNCTION *****************************/
@@ -180,6 +202,7 @@ static void kernel_timer_function(unsigned long data) {
 	int index_value;
 	unsigned char specific_data;
 	unsigned char value[4];
+	unsigned char string_lcd[32];
 
 	// count check
 	p_data->cnt--;
@@ -187,6 +210,8 @@ static void kernel_timer_function(unsigned long data) {
 		iom_fpga_fnd_write(fnd_init);
 		iom_led_write(&led_init);
 		iom_fpga_dot_write(fpga_set_blank);
+		memset(string_lcd, ' ', MAX_BUFF);
+		iom_fpga_text_lcd_write(string_lcd);
 
 		del_timer(&timer);
 		return;
@@ -211,8 +236,12 @@ static void kernel_timer_function(unsigned long data) {
 			}
 		}
 		specific_data = value[index_value];
-
 		memcpy(p_data->value, &value, sizeof(value));
+
+		line_1 = shift_text(line_1);
+		line_2 = shift_text(line_2);
+		strncat(string_lcd, line_1, LINE_BUFF);
+		strncat(string_lcd+LINE_BUFF, line_2, LINE_BUFF);
 
 		printk("[kernel_timer_function 0] : %u\n", value[0]);
 		printk("[kernel_timer_function 1] : %u\n", value[1]);
@@ -223,6 +252,7 @@ static void kernel_timer_function(unsigned long data) {
 		iom_fpga_fnd_write(value);
 		iom_led_write(&specific_data);
 		iom_fpga_dot_write(fpga_number[specific_data]);
+		iom_fpga_text_lcd_write(string_lcd);
 
 		// add timer 
 		timer.expires = get_jiffies_64() + (mydata.interval/10 * HZ);
@@ -255,9 +285,12 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 			printk("[TIMER_INIT 2] : %u\n", mydata.init[2]);
 			printk("[TIMER_INIT 3] : %u\n", mydata.init[3]);
 
+			memset(line_1, "120220184       ", LINE_BUFF);
+			memset(line_2, "JungGyeongHwan  ", LINE_BUFF);
+
 			del_timer_sync(&timer);
 
-			// FND INIT MODE
+			// DEVICE INIT MODE
 			iom_fpga_fnd_write(mydata.value);
 
 			break;
