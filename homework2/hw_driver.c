@@ -235,8 +235,8 @@ static void kernel_timer_function(unsigned long data) {
 		specific_data = value[index_value];
 		memcpy(p_data->value, &value, sizeof(value));
 
-		line_1 = shift_text(line_1);
-		line_2 = shift_text(line_2);
+		memcpy(line_1, shift_text(line_1), LINE_BUFF);
+		memcpy(line_2, shift_text(line_2), LINE_BUFF);
 		strncat(string_lcd, line_1, LINE_BUFF);
 		strncat(string_lcd+LINE_BUFF, line_2, LINE_BUFF);
 
