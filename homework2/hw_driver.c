@@ -160,13 +160,10 @@ ssize_t iom_fpga_text_lcd_write(unsigned char *gdata)
 	unsigned char value[33];
 	const char *tmp = gdata;
 
-	if (copy_from_user(&value, tmp, length))
-		return -EFAULT;
+	memcpy(&value, tmp, sizeof(value));
+	value[MAX_BUFF+1] = 0;
 
-	value[length]=0;
-	printk("Get Size : %d / String : %s\n",length,value);
-
-	for(i=0;i<length;i++)
+	for(i=0;i<MAX_BUFF+1;i++)
     {
         _s_value = (value[i] & 0xFF) << 8 | value[i + 1] & 0xFF;
 		outw(_s_value,(unsigned int)iom_fpga_text_lcd_addr+i);
