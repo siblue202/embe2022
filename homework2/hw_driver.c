@@ -268,7 +268,7 @@ static void kernel_timer_function(unsigned long data) {
 
 int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg){
 	printk("The kernel_timer_ioctl() function has been called\n");
-	int index_value;
+	int index;
 	unsigned char specific_value;
 	
 	switch (cmd) {
@@ -290,8 +290,8 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 			del_timer_sync(&timer);
 
 			// DEVICE INIT MODE
-			index_value = check_index(mydata.value);
-			specific_value = mydata.value[index_value];
+			index = check_index(mydata.value);
+			specific_value = mydata.value[index];
 
 			iom_fpga_fnd_write(mydata.value);
 			iom_led_write(&specific_value);
