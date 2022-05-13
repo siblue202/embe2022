@@ -56,6 +56,7 @@ static unsigned char fnd_init[4] = {0};					// FND
 
 static unsigned char *iom_fpga_led_addr;				// LED
 static unsigned char led_init = (unsigned char)0;		// LED
+static unsigned char led_number[8] = {128, 64, 32, 16, 8, 4, 2, 1};
 
 static unsigned char *iom_fpga_dot_addr;				// DOT
 
@@ -115,6 +116,7 @@ ssize_t iom_led_write(unsigned char *gdata)
 	const char *tmp = gdata;
 
 	memcpy(&value, tmp, sizeof(value));
+	value = led_number[value];
 
     _s_value = (unsigned short)value;
     outw(_s_value, (unsigned int)iom_fpga_led_addr);
