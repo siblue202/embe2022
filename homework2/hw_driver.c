@@ -61,9 +61,9 @@ static unsigned char led_number[8] = {128, 64, 32, 16, 8, 4, 2, 1};
 
 static unsigned char *iom_fpga_dot_addr;				// DOT
 
-// static unsigned char *iom_fpga_text_lcd_addr;			// TEXT_LCD
-// static unsigned char line_1[LINE_BUFF];					// TEXT_LCD
-// static unsigned char line_2[LINE_BUFF];					// TEXT_LCD
+static unsigned char *iom_fpga_text_lcd_addr;			// TEXT_LCD
+static unsigned char line_1[LINE_BUFF];					// TEXT_LCD
+static unsigned char line_2[LINE_BUFF];					// TEXT_LCD
 
 /***************************** FOR DEVICE *****************************/
 
@@ -155,7 +155,6 @@ ssize_t iom_fpga_dot_write(unsigned char *gdata)
 /***************************** TEXT_LCD FUNCTION *****************************/
 
 // when write to fpga_text_lcd device  ,call this function
-/*
 ssize_t iom_fpga_text_lcd_write(unsigned char *gdata) 
 {
 	int i;
@@ -193,7 +192,7 @@ char* shift_text(unsigned char *gdata){
 
 	return value;
 }
-*/
+
 /***************************** TEXT_LCD FUNCTION *****************************/
 
 /***************************** TIMER FUNCTION *****************************/
@@ -243,10 +242,10 @@ static void kernel_timer_function(unsigned long data) {
 		specific_data = value[index_value];
 		memcpy(p_data->value, &value, sizeof(value));
 
-		// memcpy(line_1, shift_text(line_1), LINE_BUFF);
-		// memcpy(line_2, shift_text(line_2), LINE_BUFF);
-		// strncat(string_lcd, line_1, LINE_BUFF);
-		// strncat(string_lcd+LINE_BUFF, line_2, LINE_BUFF);
+		memcpy(line_1, shift_text(line_1), LINE_BUFF);
+		memcpy(line_2, shift_text(line_2), LINE_BUFF);
+		strncat(string_lcd, line_1, LINE_BUFF);
+		strncat(string_lcd+LINE_BUFF, line_2, LINE_BUFF);
 
 		printk("[kernel_timer_function 0] : %u\n", value[0]);
 		printk("[kernel_timer_function 1] : %u\n", value[1]);
@@ -293,8 +292,8 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 			printk("[TIMER_INIT 2] : %u\n", mydata.init[2]);
 			printk("[TIMER_INIT 3] : %u\n", mydata.init[3]);
 
-			// memset(line_1, "120220184       ", LINE_BUFF);
-			// memset(line_2, "JungGyeongHwan  ", LINE_BUFF);
+			memset(line_1, "120220184       ", LINE_BUFF);
+			memset(line_2, "JungGyeongHwan  ", LINE_BUFF);
 
 			del_timer_sync(&timer);
 
@@ -368,7 +367,7 @@ int __init kernel_timer_init(void)
 	iom_fpga_fnd_addr = ioremap(IOM_FND_ADDRESS, 0x4);					// FND
 	iom_fpga_led_addr = ioremap(IOM_LED_ADDRESS, 0x1);					// LED
 	iom_fpga_dot_addr = ioremap(IOM_FPGA_DOT_ADDRESS, 0x10);			// DOT
-	// iom_fpga_text_lcd_addr = ioremap(IOM_FPGA_TEXT_LCD_ADDRESS, 0x32);	// TEXT_LCD
+	iom_fpga_text_lcd_addr = ioremap(IOM_FPGA_TEXT_LCD_ADDRESS, 0x32);	// TEXT_LCD
 
 
 	printk("init module\n");
@@ -379,11 +378,11 @@ void __exit kernel_timer_exit(void)
 {
 	printk("kernel_timer_exit\n");
 
-	del_timer_sync(&timer); // TIMER
+	del_timer_sync(&timer); 			// TIMER
 	iounmap(iom_fpga_fnd_addr);			// FND
 	iounmap(iom_fpga_led_addr);			// LED
 	iounmap(iom_fpga_dot_addr);			// DOT
-	// iounmap(iom_fpga_text_lcd_addr);	// TEXT_LCD
+	iounmap(iom_fpga_text_lcd_addr);	// TEXT_LCD
 
 	unregister_chrdev(KERNEL_TIMER_MAJOR, KERNEL_TIMER_NAME);
 }
