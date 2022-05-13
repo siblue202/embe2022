@@ -116,7 +116,7 @@ ssize_t iom_led_write(unsigned char *gdata)
 	const char *tmp = gdata;
 
 	memcpy(&value, tmp, sizeof(value));
-	value = led_number[value];
+	value = led_number[value-1];
 
     _s_value = (unsigned short)value;
     outw(_s_value, (unsigned int)iom_fpga_led_addr);
@@ -268,6 +268,8 @@ static void kernel_timer_function(unsigned long data) {
 
 int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg){
 	printk("The kernel_timer_ioctl() function has been called\n");
+	int index_value;
+	unsigned char specific_value;
 	
 	switch (cmd) {
 		case SET_OPTION:
@@ -288,7 +290,12 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 			del_timer_sync(&timer);
 
 			// DEVICE INIT MODE
+			index_value = check_index(mydata.value);
+			specific_value = mydata.value[index_value];
+
 			iom_fpga_fnd_write(mydata.value);
+			iom_led_write(&specific_value);
+			iom_fpga_dot_write(fpga_number[specific_value]);
 
 			break;
 
