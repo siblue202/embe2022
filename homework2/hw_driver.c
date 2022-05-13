@@ -65,6 +65,7 @@ static unsigned char *iom_fpga_text_lcd_addr;			// TEXT_LCD
 static unsigned char line_1[LINE_BUFF];					// TEXT_LCD
 static unsigned char line_2[LINE_BUFF];					// TEXT_LCD
 
+
 /***************************** FOR DEVICE *****************************/
 
 /***************************** FND FUNCTION *****************************/
@@ -276,6 +277,8 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 	printk("The kernel_timer_ioctl() function has been called\n");
 	int index;
 	unsigned char specific_value;
+	char student_num[16] = "120220184       ";
+	char student_name[16] = "JungGyeongHwan  ";
 	
 	switch (cmd) {
 		case SET_OPTION:
@@ -290,8 +293,8 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 			// printk("[TIMER_INIT 2] : %u\n", mydata.init[2]);
 			// printk("[TIMER_INIT 3] : %u\n", mydata.init[3]);
 
-			memset(line_1, '120220184       ', LINE_BUFF);
-			memset(line_2, 'JungGyeongHwan  ', LINE_BUFF);
+			memcpy(line_1, &student_num, LINE_BUFF);
+			memcpy(line_2, &student_name, LINE_BUFF);
 
 			del_timer_sync(&timer);
 
