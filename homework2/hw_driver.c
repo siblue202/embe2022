@@ -75,10 +75,10 @@ ssize_t iom_fpga_fnd_write(unsigned char *gdata)
 	unsigned short int value_short = 0;
 
 	memcpy(&value, gdata, sizeof(value));
-	printk("[iom_fpga_fnd_write 0] : %u\n", value[0]);
-	printk("[iom_fpga_fnd_write 1] : %u\n", value[1]);
-	printk("[iom_fpga_fnd_write 2] : %u\n", value[2]);
-	printk("[iom_fpga_fnd_write 3] : %u\n", value[3]);
+	// printk("[iom_fpga_fnd_write 0] : %u\n", value[0]);
+	// printk("[iom_fpga_fnd_write 1] : %u\n", value[1]);
+	// printk("[iom_fpga_fnd_write 2] : %u\n", value[2]);
+	// printk("[iom_fpga_fnd_write 3] : %u\n", value[3]);
 
     value_short = value[0] << 12 | value[1] << 8 |value[2] << 4 |value[3];
     outw(value_short,(unsigned int)iom_fpga_fnd_addr);	    
@@ -238,15 +238,15 @@ static void kernel_timer_function(unsigned long data) {
 		specific_data = value[index_value];
 		memcpy(p_data->value, &value, sizeof(value));
 
-		memcpy(line_1, shift_text(line_1), LINE_BUFF);
-		memcpy(line_2, shift_text(line_2), LINE_BUFF);
+		// memcpy(line_1, shift_text(line_1), LINE_BUFF);
+		// memcpy(line_2, shift_text(line_2), LINE_BUFF);
 		strncat(string_lcd, line_1, LINE_BUFF);
 		strncat(string_lcd+LINE_BUFF, line_2, LINE_BUFF);
 
-		printk("[kernel_timer_function 0] : %u\n", value[0]);
-		printk("[kernel_timer_function 1] : %u\n", value[1]);
-		printk("[kernel_timer_function 2] : %u\n", value[2]);
-		printk("[kernel_timer_function 3] : %u\n", value[3]);
+		// printk("[kernel_timer_function 0] : %u\n", value[0]);
+		// printk("[kernel_timer_function 1] : %u\n", value[1]);
+		// printk("[kernel_timer_function 2] : %u\n", value[2]);
+		// printk("[kernel_timer_function 3] : %u\n", value[3]);
 
 		// device control
 		iom_fpga_fnd_write(value);
@@ -281,12 +281,12 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 			if (copy_from_user(&mydata, (void __user *)arg, sizeof(mydata))) {
 				return -EFAULT;
 			}
-			printk("[TIMER_INTERVAL] : %d\n", mydata.interval);
-    		printk("[TIMER_CNT] : %d\n", mydata.cnt);
-    		printk("[TIMER_INIT 0] : %u\n", mydata.init[0]);
-			printk("[TIMER_INIT 1] : %u\n", mydata.init[1]);
-			printk("[TIMER_INIT 2] : %u\n", mydata.init[2]);
-			printk("[TIMER_INIT 3] : %u\n", mydata.init[3]);
+			// printk("[TIMER_INTERVAL] : %d\n", mydata.interval);
+    		// printk("[TIMER_CNT] : %d\n", mydata.cnt);
+    		// printk("[TIMER_INIT 0] : %u\n", mydata.init[0]);
+			// printk("[TIMER_INIT 1] : %u\n", mydata.init[1]);
+			// printk("[TIMER_INIT 2] : %u\n", mydata.init[2]);
+			// printk("[TIMER_INIT 3] : %u\n", mydata.init[3]);
 
 			memset(line_1, "120220184       ", LINE_BUFF);
 			memset(line_2, "JungGyeongHwan  ", LINE_BUFF);
