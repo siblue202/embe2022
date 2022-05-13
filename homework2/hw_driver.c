@@ -230,6 +230,7 @@ static void kernel_timer_function(unsigned long data) {
 			if (index_value == 3){
 				value[0] = value[index_value];
 				value[index_value] = 0;
+				index_value++;
 			} else {
 				value[index_value+1] = value[index_value];
 				value[index_value] = 0;
