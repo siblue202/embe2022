@@ -51,19 +51,19 @@ static int kernel_timer_usage = 0;
 
 /***************************** FOR DEVICE *****************************/
 
-static unsigned char *iom_fpga_fnd_addr;				// FND
-static unsigned char fnd_init[4] = {0};					// FND
-static int fnd_count = 0;								// FND
+static unsigned char *iom_fpga_fnd_addr;							// FND
+static unsigned char fnd_init[4] = {0};								// FND
+static int fnd_count = 0;											// FND
 
-static unsigned char *iom_fpga_led_addr;				// LED
-static unsigned char led_init = (unsigned char)0;		// LED
-static unsigned char led_number[8] = {128, 64, 32, 16, 8, 4, 2, 1};
+static unsigned char *iom_fpga_led_addr;							// LED
+static unsigned char led_init = (unsigned char)0;					// LED
+static unsigned char led_number[8] = {128, 64, 32, 16, 8, 4, 2, 1};	// LED
 
-static unsigned char *iom_fpga_dot_addr;				// DOT
+static unsigned char *iom_fpga_dot_addr;							// DOT
 
-static unsigned char *iom_fpga_text_lcd_addr;			// TEXT_LCD
-static unsigned char line_1[LINE_BUFF];					// TEXT_LCD
-static unsigned char line_2[LINE_BUFF];					// TEXT_LCD
+static unsigned char *iom_fpga_text_lcd_addr;						// TEXT_LCD
+static char line_1[LINE_BUFF];										// TEXT_LCD
+static char line_2[LINE_BUFF];										// TEXT_LCD
 
 
 /***************************** FOR DEVICE *****************************/
@@ -152,7 +152,7 @@ ssize_t iom_fpga_dot_write(unsigned char *gdata)
 /***************************** TEXT_LCD FUNCTION *****************************/
 
 // when write to fpga_text_lcd device  ,call this function
-ssize_t iom_fpga_text_lcd_write(unsigned char *gdata) 
+ssize_t iom_fpga_text_lcd_write(char *gdata) 
 {
 	int i;
 
@@ -201,7 +201,7 @@ static void kernel_timer_function(unsigned long data) {
 	int index_value;
 	unsigned char specific_data;
 	unsigned char value[4];
-	unsigned char string_lcd[32];
+	unsigned char string_lcd[MAX_BUFF];
 
 	// count check
 	p_data->cnt--;
@@ -293,8 +293,8 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 			// printk("[TIMER_INIT 2] : %u\n", mydata.init[2]);
 			// printk("[TIMER_INIT 3] : %u\n", mydata.init[3]);
 
-			memcpy(line_1, &student_num, LINE_BUFF);
-			memcpy(line_2, &student_name, LINE_BUFF);
+			memcpy(line_1, student_num, LINE_BUFF);
+			memcpy(line_2, student_name, LINE_BUFF);
 
 			del_timer_sync(&timer);
 
