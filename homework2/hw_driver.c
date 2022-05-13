@@ -116,7 +116,7 @@ ssize_t iom_led_write(unsigned char *gdata)
 	const char *tmp = gdata;
 
 	memcpy(&value, tmp, sizeof(value));
-	value = led_number[value-1];
+	value = led_number[(int)value-1];
 
     _s_value = (unsigned short)value;
     outw(_s_value, (unsigned int)iom_fpga_led_addr);
