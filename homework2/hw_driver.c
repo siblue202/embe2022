@@ -109,14 +109,17 @@ int check_index(unsigned char *gdata){
 /***************************** LED FUNCTION *****************************/
 
 // when write to led device  ,call this function
-ssize_t iom_led_write(unsigned char *gdata) 
+// flag : 0 (end phase), 1 (execution phase)
+ssize_t iom_led_write(unsigned char *gdata, int flag) 
 {
 	unsigned char value;
 	unsigned short _s_value;
 	const char *tmp = gdata;
 
 	memcpy(&value, tmp, sizeof(value));
-	value = led_number[(int)value-1];
+	if ( flag != 0 ) {
+		value = led_number[(int)value-1];
+	}
 
     _s_value = (unsigned short)value;
     outw(_s_value, (unsigned int)iom_fpga_led_addr);
@@ -205,7 +208,7 @@ static void kernel_timer_function(unsigned long data) {
 	p_data->cnt--;
 	if( (int)p_data->cnt <= 0 ) {
 		iom_fpga_fnd_write(fnd_init);
-		iom_led_write(&led_init);
+		iom_led_write(&led_init, 0);
 		iom_fpga_dot_write(fpga_set_blank);
 		// memset(string_lcd, ' ', MAX_BUFF);
 		// iom_fpga_text_lcd_write(string_lcd);
@@ -247,7 +250,7 @@ static void kernel_timer_function(unsigned long data) {
 
 		// device control
 		iom_fpga_fnd_write(value);
-		iom_led_write(&specific_data);
+		iom_led_write(&specific_data, 1);
 		iom_fpga_dot_write(fpga_number[specific_data]);
 		// iom_fpga_text_lcd_write(string_lcd);
 
@@ -294,7 +297,7 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 			specific_value = mydata.value[index];
 
 			iom_fpga_fnd_write(mydata.value);
-			iom_led_write(&specific_value);
+			iom_led_write(&specific_value, 1);
 			iom_fpga_dot_write(fpga_number[specific_value]);
 
 			break;
