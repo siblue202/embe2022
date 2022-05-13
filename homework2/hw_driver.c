@@ -235,10 +235,11 @@ static void kernel_timer_function(unsigned long data) {
 			} else {
 				value[index_value+1] = value[index_value];
 				value[index_value] = 0;
+				index_value++;
 			}
 			fnd_count = 8;
 		}
-		
+
 		specific_data = value[index_value];
 		memcpy(p_data->value, &value, sizeof(value));
 
