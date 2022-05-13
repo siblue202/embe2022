@@ -166,7 +166,7 @@ ssize_t iom_fpga_text_lcd_write(char *gdata)
 	for(i=0; i < 16; i++)
     {
 		printk("for loop num : %d\n", i);
-        _s_value = (value[i] & 0xFF) << 8 | value[i + 1] & 0xFF;
+        _s_value = (((value[i] & 0xFF) << 8) | (value[i + 1] & 0xFF));
 		printk("_s_value value : %u\n", _s_value);
 		outw(_s_value,(unsigned int)iom_fpga_text_lcd_addr+i);
         i++;
