@@ -53,6 +53,7 @@ static int kernel_timer_usage = 0;
 
 static unsigned char *iom_fpga_fnd_addr;				// FND
 static unsigned char fnd_init[4] = {0};					// FND
+static int fnd_count = 0;								// FND
 
 static unsigned char *iom_fpga_led_addr;				// LED
 static unsigned char led_init = (unsigned char)0;		// LED
@@ -226,7 +227,7 @@ static void kernel_timer_function(unsigned long data) {
 			value[index_value] = 1;
 		}
 		
-		if (value[index_value] == p_data->init[index_value]) {
+		if (fnd_count == 0) {
 			if (index_value == 3){
 				value[0] = value[index_value];
 				value[index_value] = 0;
@@ -235,7 +236,9 @@ static void kernel_timer_function(unsigned long data) {
 				value[index_value+1] = value[index_value];
 				value[index_value] = 0;
 			}
+			fnd_count = 8;
 		}
+		
 		specific_data = value[index_value];
 		memcpy(p_data->value, &value, sizeof(value));
 
@@ -251,6 +254,7 @@ static void kernel_timer_function(unsigned long data) {
 
 		// device control
 		iom_fpga_fnd_write(value);
+		fnd_count--;
 		iom_led_write(&specific_data, 1);
 		iom_fpga_dot_write(fpga_number[specific_data]);
 		// iom_fpga_text_lcd_write(string_lcd);
@@ -296,8 +300,10 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 			// DEVICE INIT MODE
 			index = check_index(mydata.value);
 			specific_value = mydata.value[index];
+			fnd_count = 8;
 
 			iom_fpga_fnd_write(mydata.value);
+			fnd_count--;
 			iom_led_write(&specific_value, 1);
 			iom_fpga_dot_write(fpga_number[specific_value]);
 
