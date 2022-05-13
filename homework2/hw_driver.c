@@ -71,13 +71,9 @@ static unsigned char line_2[LINE_BUFF];					// TEXT_LCD
 // when write to fnd device  ,call this function
 ssize_t iom_fpga_fnd_write(unsigned char *gdata) 
 {
-	// int i;
 	unsigned char value[4];
 	unsigned short int value_short = 0;
-	// const char *tmp = gdata;
 
-	// if (copy_from_user(&value, tmp, 4))
-	// 	return -EFAULT;
 	memcpy(&value, gdata, sizeof(value));
 	printk("[iom_fpga_fnd_write 0] : %u\n", value[0]);
 	printk("[iom_fpga_fnd_write 1] : %u\n", value[1]);
@@ -202,7 +198,7 @@ static void kernel_timer_function(unsigned long data) {
 	int index_value;
 	unsigned char specific_data;
 	unsigned char value[4];
-	// unsigned char string_lcd[32];
+	unsigned char string_lcd[32];
 
 	// count check
 	p_data->cnt--;
@@ -210,8 +206,8 @@ static void kernel_timer_function(unsigned long data) {
 		iom_fpga_fnd_write(fnd_init);
 		iom_led_write(&led_init, 0);
 		iom_fpga_dot_write(fpga_set_blank);
-		// memset(string_lcd, ' ', MAX_BUFF);
-		// iom_fpga_text_lcd_write(string_lcd);
+		memset(string_lcd, ' ', MAX_BUFF);
+		iom_fpga_text_lcd_write(string_lcd);
 
 		del_timer(&timer);
 		return;
@@ -257,7 +253,7 @@ static void kernel_timer_function(unsigned long data) {
 		fnd_count--;
 		iom_led_write(&specific_data, 1);
 		iom_fpga_dot_write(fpga_number[specific_data]);
-		// iom_fpga_text_lcd_write(string_lcd);
+		iom_fpga_text_lcd_write(string_lcd);
 
 		// add timer 
 		timer.expires = get_jiffies_64() + (mydata.interval/10 * HZ);
