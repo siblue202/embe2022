@@ -163,14 +163,16 @@ ssize_t iom_fpga_text_lcd_write(char *gdata)
 	memcpy(&value, tmp, MAX_BUFF);
 	value[MAX_BUFF] = 0;
 
-	for(i=0; i<MAX_BUFF; i++)
+	for(i=0; i<int(MAX_BUFF); i++)
     {
+		printk("for loop num : %d\n", i);
         _s_value = (value[i] & 0xFF) << 8 | value[i + 1] & 0xFF;
+		printk("_s_value value : %u\n", _s_value);
 		outw(_s_value,(unsigned int)iom_fpga_text_lcd_addr+i);
         i++;
     }
 
-	return sizeof(value);
+	return MAX_BUFF;
 }
 
 /*
