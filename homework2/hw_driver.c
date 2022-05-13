@@ -164,7 +164,7 @@ ssize_t iom_fpga_text_lcd_write(unsigned char *gdata)
 
 	for(i=0;i<MAX_BUFF+1;i++)
     {
-        _s_value = (value[i] & 0xFF) << 8 | value[i + 1] & 0xFF;
+        _s_value = (((value[i] & 0xFF) << 8) | (value[i + 1] & 0xFF));
 		outw(_s_value,(unsigned int)iom_fpga_text_lcd_addr+i);
         i++;
     }
@@ -172,6 +172,7 @@ ssize_t iom_fpga_text_lcd_write(unsigned char *gdata)
 	return sizeof(value);
 }
 
+/*
 char* shift_text(unsigned char *gdata){
 	unsigned char value[LINE_BUFF];
 	unsigned char tmp_value[LINE_BUFF];
@@ -188,6 +189,7 @@ char* shift_text(unsigned char *gdata){
 
 	return value;
 }
+*/
 
 /***************************** TEXT_LCD FUNCTION *****************************/
 
@@ -288,8 +290,8 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 			// printk("[TIMER_INIT 2] : %u\n", mydata.init[2]);
 			// printk("[TIMER_INIT 3] : %u\n", mydata.init[3]);
 
-			memset(line_1, "120220184       ", LINE_BUFF);
-			memset(line_2, "JungGyeongHwan  ", LINE_BUFF);
+			memset(line_1, '120220184       ', LINE_BUFF);
+			memset(line_2, 'JungGyeongHwan  ', LINE_BUFF);
 
 			del_timer_sync(&timer);
 
