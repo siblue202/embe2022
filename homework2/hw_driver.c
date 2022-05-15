@@ -62,8 +62,8 @@ static unsigned char led_number[8] = {128, 64, 32, 16, 8, 4, 2, 1};	// LED
 static unsigned char *iom_fpga_dot_addr;							// DOT
 
 static unsigned char *iom_fpga_text_lcd_addr;						// TEXT_LCD
-static char line_1[LINE_BUFF];										// TEXT_LCD
-static char line_2[LINE_BUFF];										// TEXT_LCD
+static unsigned char line_1[LINE_BUFF];										// TEXT_LCD
+static unsigned char line_2[LINE_BUFF];										// TEXT_LCD
 
 
 /***************************** FOR DEVICE *****************************/
