@@ -301,6 +301,9 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 
 			strncat(string_lcd, line_1, LINE_BUFF);
 			strncat(string_lcd+LINE_BUFF, line_2, LINE_BUFF);
+			for(index=0; index<MAX_BUFF; index++){
+				printk("string_lcd[%d] : %u \n", index, string_lcd[index]);
+			}
 
 			del_timer_sync(&timer);
 
@@ -313,7 +316,7 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 			fnd_count--;
 			iom_led_write(&specific_value, 1);
 			iom_fpga_dot_write(fpga_number[specific_value]);
-			iom_fpga_text_lcd_write(string_lcd);
+			// iom_fpga_text_lcd_write(string_lcd);
 
 			break;
 
