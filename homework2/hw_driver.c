@@ -152,6 +152,7 @@ ssize_t iom_fpga_dot_write(unsigned char *gdata)
 /***************************** TEXT_LCD FUNCTION *****************************/
 
 // when write to fpga_text_lcd device  ,call this function
+/*
 ssize_t iom_fpga_text_lcd_write(char *gdata) 
 {
 	int i;
@@ -163,7 +164,7 @@ ssize_t iom_fpga_text_lcd_write(char *gdata)
 	memcpy(&value, tmp, MAX_BUFF);
 	value[MAX_BUFF] = 0;
 
-	for(i=0; i < 16; i++)
+	for(i=0; i < MAX_BUFF; i++)
     {
 		printk("for loop num : %d\n", i);
         _s_value = (((value[i] & 0xFF) << 8) | (value[i + 1] & 0xFF));
@@ -174,6 +175,7 @@ ssize_t iom_fpga_text_lcd_write(char *gdata)
 
 	return MAX_BUFF;
 }
+*/
 
 /*
 char* shift_text(unsigned char *gdata){
@@ -210,7 +212,7 @@ static void kernel_timer_function(unsigned long data) {
 	if( (int)p_data->cnt <= 0 ) {
 		iom_fpga_fnd_write(fnd_init);
 		iom_led_write(&led_init, 0);
-		iom_fpga_dot_write(fpga_set_blank);
+		//iom_fpga_dot_write(fpga_set_blank);
 		memset(string_lcd, ' ', MAX_BUFF);
 		iom_fpga_text_lcd_write(string_lcd);
 
@@ -257,7 +259,7 @@ static void kernel_timer_function(unsigned long data) {
 		iom_fpga_fnd_write(value);
 		fnd_count--;
 		iom_led_write(&specific_data, 1);
-		iom_fpga_dot_write(fpga_number[specific_data]);
+		// iom_fpga_dot_write(fpga_number[specific_data]);
 		iom_fpga_text_lcd_write(string_lcd);
 
 		// add timer 
@@ -279,8 +281,8 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 	printk("The kernel_timer_ioctl() function has been called\n");
 	int index;
 	unsigned char specific_value;
-	char student_num[16] = "120220184       ";
-	char student_name[16] = "JungGyeongHwan  ";
+	char student_num[] = "120220184       ";
+	char student_name[] = "JungGyeongHwan  ";
 	
 	switch (cmd) {
 		case SET_OPTION:
@@ -297,6 +299,11 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 
 			memcpy(line_1, student_num, LINE_BUFF);
 			memcpy(line_2, student_name, LINE_BUFF);
+			
+			for(index = 0; index < LINE_BUFF; index ++){
+				printk("student_num[i] : %u\n", student_num[index]);
+				printk("student_name[i] : %u\n", student_name[index]);
+			}
 
 			del_timer_sync(&timer);
 
@@ -308,7 +315,7 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 			iom_fpga_fnd_write(mydata.value);
 			fnd_count--;
 			iom_led_write(&specific_value, 1);
-			iom_fpga_dot_write(fpga_number[specific_value]);
+			// iom_fpga_dot_write(fpga_number[specific_value]);
 
 			break;
 
