@@ -188,6 +188,9 @@ void shift_text(unsigned char *gdata){
 		value[i+1] = value[i];
 	}
 	value[0] = tmp_value[LINE_BUFF-1];
+	for(i=0; i<LINE_BUFF; i++){
+		printk("value[%d] : %u\n", i, value[i]);
+	}
 
 	memcpy(gdata, value, LINE_BUFF);
 }
