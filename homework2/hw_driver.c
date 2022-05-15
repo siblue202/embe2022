@@ -244,8 +244,8 @@ static void kernel_timer_function(unsigned long data) {
 
 		// memcpy(line_1, shift_text(line_1), LINE_BUFF);
 		// memcpy(line_2, shift_text(line_2), LINE_BUFF);
-		strncat(string_lcd, line_1, LINE_BUFF);
-		strncat(string_lcd, line_2, LINE_BUFF);
+		memcpy(string_lcd, line_1, LINE_BUFF);
+		memcpy(string_lcd+LINE_BUFF, line_2, LINE_BUFF);
 
 		// printk("[kernel_timer_function 0] : %u\n", value[0]);
 		// printk("[kernel_timer_function 1] : %u\n", value[1]);
@@ -298,8 +298,8 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 			memcpy(line_1, student_num, LINE_BUFF);
 			memcpy(line_2, student_name, LINE_BUFF);
 
-			strncat(string_lcd, line_1, LINE_BUFF);
-			strncat(string_lcd, line_2, LINE_BUFF);
+			memcpy(string_lcd, line_1, LINE_BUFF);
+			memcpy(string_lcd+LINE_BUFF, line_2, LINE_BUFF);
 			del_timer_sync(&timer);
 
 			// DEVICE INIT MODE
