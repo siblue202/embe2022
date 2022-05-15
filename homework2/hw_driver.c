@@ -189,7 +189,7 @@ void shift_text(unsigned char *gdata){
 	}
 	value[0] = tmp_value[LINE_BUFF-1];
 
-	memcpy(&gdata, value, LINE_BUFF);
+	memcpy(gdata, value, LINE_BUFF);
 }
 
 /***************************** TEXT_LCD FUNCTION *****************************/
@@ -240,8 +240,8 @@ static void kernel_timer_function(unsigned long data) {
 		specific_data = value[index_value];
 		memcpy(p_data->value, &value, sizeof(value));
 
-		shift_text(&line_1);
-		shift_text(&line_2);
+		shift_text(line_1);
+		shift_text(line_2);
 		memcpy(string_lcd, line_1, LINE_BUFF);
 		memcpy(string_lcd+LINE_BUFF, line_2, LINE_BUFF);
 
