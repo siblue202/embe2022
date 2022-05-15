@@ -185,7 +185,7 @@ void shift_text(unsigned char *gdata){
 	memcpy(&tmp_value, tmp, LINE_BUFF);
 
 	for (i=0; i<LINE_BUFF-1; i++){
-		value[i+1] = value[i];
+		value[i+1] = tmp_value[i];
 	}
 	value[0] = tmp_value[LINE_BUFF-1];
 	for(i=0; i<LINE_BUFF; i++){
