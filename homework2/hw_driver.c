@@ -152,7 +152,6 @@ ssize_t iom_fpga_dot_write(unsigned char *gdata)
 /***************************** TEXT_LCD FUNCTION *****************************/
 
 // when write to fpga_text_lcd device  ,call this function
-/*
 ssize_t iom_fpga_text_lcd_write(char *gdata) 
 {
 	int i;
@@ -175,7 +174,6 @@ ssize_t iom_fpga_text_lcd_write(char *gdata)
 
 	return MAX_BUFF;
 }
-*/
 
 /*
 char* shift_text(unsigned char *gdata){
@@ -283,6 +281,7 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 	unsigned char specific_value;
 	char student_num[] = "120220184       ";
 	char student_name[] = "JungGyeongHwan  ";
+	unsigned char string_lcd[MAX_BUFF];
 	
 	switch (cmd) {
 		case SET_OPTION:
@@ -299,11 +298,9 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 
 			memcpy(line_1, student_num, LINE_BUFF);
 			memcpy(line_2, student_name, LINE_BUFF);
-			
-			for(index = 0; index < LINE_BUFF; index ++){
-				printk("student_num[i] : %u\n", student_num[index]);
-				printk("student_name[i] : %u\n", student_name[index]);
-			}
+
+			strncat(string_lcd, line_1, LINE_BUFF);
+			strncat(string_lcd+LINE_BUFF, line_2, LINE_BUFF);
 
 			del_timer_sync(&timer);
 
@@ -315,7 +312,8 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 			iom_fpga_fnd_write(mydata.value);
 			fnd_count--;
 			iom_led_write(&specific_value, 1);
-			// iom_fpga_dot_write(fpga_number[specific_value]);
+			iom_fpga_dot_write(fpga_number[specific_value]);
+			iom_fpga_text_lcd_write(string_lcd);
 
 			break;
 
