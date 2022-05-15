@@ -174,8 +174,8 @@ ssize_t iom_fpga_text_lcd_write(char *gdata)
 	return MAX_BUFF;
 }
 
-/*
-char* shift_text(unsigned char *gdata){
+
+void shift_text(unsigned char *gdata){
 	unsigned char value[LINE_BUFF];
 	unsigned char tmp_value[LINE_BUFF];
 	const char *tmp = gdata;
@@ -189,9 +189,8 @@ char* shift_text(unsigned char *gdata){
 	}
 	value[i] = tmp_value[LINE_BUFF-1];
 
-	return value;
+	memcpy(gdata, value, LINE_BUFF);
 }
-*/
 
 /***************************** TEXT_LCD FUNCTION *****************************/
 
@@ -220,7 +219,6 @@ static void kernel_timer_function(unsigned long data) {
 		memcpy(&value, p_data->value, sizeof(value));
 
 		index_value = check_index(p_data->value); 
-		printk("check index_value : %d \n", index_value);
 		value[index_value] = value[index_value]+1;
 		if (value[index_value] > 8) {
 			value[index_value] = 1;
@@ -242,8 +240,8 @@ static void kernel_timer_function(unsigned long data) {
 		specific_data = value[index_value];
 		memcpy(p_data->value, &value, sizeof(value));
 
-		// memcpy(line_1, shift_text(line_1), LINE_BUFF);
-		// memcpy(line_2, shift_text(line_2), LINE_BUFF);
+		shift_text(line_1);
+		shift_text(line_2);
 		memcpy(string_lcd, line_1, LINE_BUFF);
 		memcpy(string_lcd+LINE_BUFF, line_2, LINE_BUFF);
 
