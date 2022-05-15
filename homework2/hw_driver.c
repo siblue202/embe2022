@@ -209,9 +209,9 @@ static void kernel_timer_function(unsigned long data) {
 	if( (int)p_data->cnt <= 0 ) {
 		iom_fpga_fnd_write(fnd_init);
 		iom_led_write(&led_init, 0);
-		//iom_fpga_dot_write(fpga_set_blank);
+		iom_fpga_dot_write(fpga_set_blank);
 		memset(string_lcd, ' ', MAX_BUFF);
-		//iom_fpga_text_lcd_write(string_lcd);
+		iom_fpga_text_lcd_write(string_lcd);
 
 		del_timer(&timer);
 		return;
@@ -245,7 +245,7 @@ static void kernel_timer_function(unsigned long data) {
 		// memcpy(line_1, shift_text(line_1), LINE_BUFF);
 		// memcpy(line_2, shift_text(line_2), LINE_BUFF);
 		strncat(string_lcd, line_1, LINE_BUFF);
-		strncat(string_lcd+LINE_BUFF, line_2, LINE_BUFF);
+		strncat(string_lcd, line_2, LINE_BUFF);
 
 		// printk("[kernel_timer_function 0] : %u\n", value[0]);
 		// printk("[kernel_timer_function 1] : %u\n", value[1]);
@@ -257,7 +257,7 @@ static void kernel_timer_function(unsigned long data) {
 		fnd_count--;
 		iom_led_write(&specific_data, 1);
 		iom_fpga_dot_write(fpga_number[specific_data]);
-		// iom_fpga_text_lcd_write(string_lcd);
+		iom_fpga_text_lcd_write(string_lcd);
 
 		// add timer 
 		timer.expires = get_jiffies_64() + (mydata.interval/10 * HZ);
@@ -299,11 +299,6 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 
 			strncat(string_lcd, line_1, LINE_BUFF);
 			strncat(string_lcd, line_2, LINE_BUFF);
-			for(index=0; index<MAX_BUFF; index++){
-				printk("string_lcd[%d] : %u \n", index, string_lcd[index]);
-			}
-			printk("is it ok? \n");
-
 			del_timer_sync(&timer);
 
 			// DEVICE INIT MODE
@@ -315,7 +310,7 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 			fnd_count--;
 			iom_led_write(&specific_value, 1);
 			iom_fpga_dot_write(fpga_number[specific_value]);
-			// iom_fpga_text_lcd_write(string_lcd);
+			iom_fpga_text_lcd_write(string_lcd);
 
 			break;
 
