@@ -187,9 +187,9 @@ void shift_text(unsigned char *gdata){
 	for (i=0; i<LINE_BUFF-1; i++){
 		value[i+1] = value[i];
 	}
-	value[i] = tmp_value[LINE_BUFF-1];
+	value[0] = tmp_value[LINE_BUFF-1];
 
-	memcpy(gdata, value, LINE_BUFF);
+	memcpy(&gdata, value, LINE_BUFF);
 }
 
 /***************************** TEXT_LCD FUNCTION *****************************/
