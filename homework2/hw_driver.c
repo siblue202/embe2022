@@ -214,7 +214,7 @@ static void kernel_timer_function(unsigned long data) {
 		iom_led_write(&led_init, 0);
 		//iom_fpga_dot_write(fpga_set_blank);
 		memset(string_lcd, ' ', MAX_BUFF);
-		iom_fpga_text_lcd_write(string_lcd);
+		//iom_fpga_text_lcd_write(string_lcd);
 
 		del_timer(&timer);
 		return;
