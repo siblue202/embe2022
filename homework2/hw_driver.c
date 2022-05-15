@@ -7,15 +7,15 @@
 #include <asm/ioctl.h>
 #include <linux/slab.h>
 
-#include <asm/io.h> // FND
-#include <asm/uaccess.h> // LED
+#include <asm/io.h>
+#include <asm/uaccess.h>
 #include <linux/ioport.h>
 #include <linux/module.h>
 #include <linux/delay.h>
-#include <linux/string.h> // TEXT_LCD
+#include <linux/string.h>
 
-#include "hw_driver.h"
-#include "./fpga_dot_font.h"
+#include "hw_driver.h"							// IOCTL setting header file
+#include "./fpga_dot_font.h"					// DOT header file
 
 #define KERNEL_TIMER_MAJOR 242
 #define KERNEL_TIMER_MINOR 0
@@ -26,9 +26,6 @@
 #define IOM_FPGA_TEXT_LCD_ADDRESS 0x08000090	// pysical address - 32 Byte (16 * 2), TEXT_LCD
 #define MAX_BUFF 32								// TEXT_LCD
 #define LINE_BUFF 16							// TEXT_LCD
-
-
-
 
 /***************************** FOR TIMER *****************************/
 
@@ -42,7 +39,7 @@ static struct file_operations kernel_timer_fops =
   .unlocked_ioctl = kernel_timer_ioctl,
   .release = kernel_timer_release };
 
-static struct Ioctl_info mydata;
+static struct Ioctl_info mydata;				// struct Ioctl_info is in hw_driver.h
 static struct timer_list timer;
 
 static int kernel_timer_usage = 0;
@@ -75,10 +72,6 @@ ssize_t iom_fpga_fnd_write(unsigned char *gdata)
 	unsigned short int value_short = 0;
 
 	memcpy(&value, gdata, sizeof(value));
-	// printk("[iom_fpga_fnd_write 0] : %u\n", value[0]);
-	// printk("[iom_fpga_fnd_write 1] : %u\n", value[1]);
-	// printk("[iom_fpga_fnd_write 2] : %u\n", value[2]);
-	// printk("[iom_fpga_fnd_write 3] : %u\n", value[3]);
 
     value_short = value[0] << 12 | value[1] << 8 |value[2] << 4 |value[3];
     outw(value_short,(unsigned int)iom_fpga_fnd_addr);	    
@@ -86,6 +79,8 @@ ssize_t iom_fpga_fnd_write(unsigned char *gdata)
 	return sizeof(value);
 }
 
+// check the current index location of FND number
+// return : current index number
 int check_index(unsigned char *gdata){
 	unsigned char value[4];
 	int i;
@@ -104,7 +99,6 @@ int check_index(unsigned char *gdata){
 /***************************** FND FUNCTION *****************************/
 
 /***************************** LED FUNCTION *****************************/
-
 // when write to led device  ,call this function
 // flag : 0 (end phase), 1 (execution phase)
 ssize_t iom_led_write(unsigned char *gdata, int flag) 
@@ -149,7 +143,6 @@ ssize_t iom_fpga_dot_write(unsigned char *gdata)
 /***************************** DOT FUNCTION *****************************/
 
 /***************************** TEXT_LCD FUNCTION *****************************/
-
 // when write to fpga_text_lcd device  ,call this function
 ssize_t iom_fpga_text_lcd_write(char *gdata) 
 {
@@ -169,12 +162,10 @@ ssize_t iom_fpga_text_lcd_write(char *gdata)
         i++;
     }
 
-	
-
 	return MAX_BUFF;
 }
 
-
+// for shifting lcd_text string
 void shift_text(unsigned char *gdata){
 	unsigned char value[LINE_BUFF];
 	unsigned char tmp_value[LINE_BUFF];
@@ -194,11 +185,10 @@ void shift_text(unsigned char *gdata){
 
 	memcpy(gdata, value, LINE_BUFF);
 }
-
 /***************************** TEXT_LCD FUNCTION *****************************/
 
 /***************************** TIMER FUNCTION *****************************/
-
+// Executed when timer is expired
 static void kernel_timer_function(unsigned long data) {
 	struct Ioctl_info *p_data = (struct Ioctl_info*)data;
 	int index_value;
@@ -206,8 +196,9 @@ static void kernel_timer_function(unsigned long data) {
 	unsigned char value[4];
 	unsigned char string_lcd[MAX_BUFF];
 
-	// count check
+	// check current cnt number. 
 	p_data->cnt--;
+	// cnt is over
 	if( (int)p_data->cnt <= 0 ) {
 		iom_fpga_fnd_write(fnd_init);
 		iom_led_write(&led_init, 0);
@@ -218,7 +209,7 @@ static void kernel_timer_function(unsigned long data) {
 		del_timer(&timer);
 		return;
 	} else {
-		// p_data's value data change
+		// Move or add fnd number.
 		memcpy(&value, p_data->value, sizeof(value));
 
 		index_value = check_index(p_data->value); 
@@ -226,8 +217,9 @@ static void kernel_timer_function(unsigned long data) {
 		if (value[index_value] > 8) {
 			value[index_value] = 1;
 		}
-		
+		// After one rotation, Move FND number to the right
 		if (fnd_count == 0) {
+			// When fnd index is at the far right
 			if (index_value == 3){
 				value[0] = value[index_value];
 				value[index_value] = 0;
@@ -243,17 +235,13 @@ static void kernel_timer_function(unsigned long data) {
 		specific_data = value[index_value];
 		memcpy(p_data->value, &value, sizeof(value));
 
+		// shift lcd_text string
 		shift_text(line_1);
 		shift_text(line_2);
 		memcpy(string_lcd, line_1, LINE_BUFF);
 		memcpy(string_lcd+LINE_BUFF, line_2, LINE_BUFF);
 
-		// printk("[kernel_timer_function 0] : %u\n", value[0]);
-		// printk("[kernel_timer_function 1] : %u\n", value[1]);
-		// printk("[kernel_timer_function 2] : %u\n", value[2]);
-		// printk("[kernel_timer_function 3] : %u\n", value[3]);
-
-		// device control
+		// Device control
 		iom_fpga_fnd_write(value);
 		fnd_count--;
 		iom_led_write(&specific_data, 1);
@@ -284,18 +272,12 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 	unsigned char string_lcd[MAX_BUFF];
 	
 	switch (cmd) {
+		// When ioctl is SET_OPTION, init information of timer device driver 
 		case SET_OPTION:
 			printk("SET_OPTION\n");
 			if (copy_from_user(&mydata, (void __user *)arg, sizeof(mydata))) {
 				return -EFAULT;
 			}
-			// printk("[TIMER_INTERVAL] : %d\n", mydata.interval);
-    		// printk("[TIMER_CNT] : %d\n", mydata.cnt);
-    		// printk("[TIMER_INIT 0] : %u\n", mydata.init[0]);
-			// printk("[TIMER_INIT 1] : %u\n", mydata.init[1]);
-			// printk("[TIMER_INIT 2] : %u\n", mydata.init[2]);
-			// printk("[TIMER_INIT 3] : %u\n", mydata.init[3]);
-
 			memcpy(line_1, student_num, LINE_BUFF);
 			memcpy(line_2, student_name, LINE_BUFF);
 
@@ -316,6 +298,7 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 
 			break;
 
+		// When ioctl is COMMAND, add TIMER device
 		case COMMAND:
 			printk("COMMAND\n");
 
@@ -371,6 +354,8 @@ int __init kernel_timer_init(void)
     printk( "dev_file : /dev/%s , major : %d\n",KERNEL_TIMER_NAME,KERNEL_TIMER_MAJOR);
 
 	init_timer(&timer); // TIMER
+
+	// Mapping I/O address space
 	iom_fpga_fnd_addr = ioremap(IOM_FND_ADDRESS, 0x4);					// FND
 	iom_fpga_led_addr = ioremap(IOM_LED_ADDRESS, 0x1);					// LED
 	iom_fpga_dot_addr = ioremap(IOM_FPGA_DOT_ADDRESS, 0x10);			// DOT
@@ -386,6 +371,7 @@ void __exit kernel_timer_exit(void)
 	printk("kernel_timer_exit\n");
 
 	del_timer_sync(&timer); 			// TIMER
+	// Unmapping I/O address space
 	iounmap(iom_fpga_fnd_addr);			// FND
 	iounmap(iom_fpga_led_addr);			// LED
 	iounmap(iom_fpga_dot_addr);			// DOT
