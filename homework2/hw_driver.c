@@ -259,8 +259,8 @@ static void kernel_timer_function(unsigned long data) {
 		iom_fpga_fnd_write(value);
 		fnd_count--;
 		iom_led_write(&specific_data, 1);
-		// iom_fpga_dot_write(fpga_number[specific_data]);
-		iom_fpga_text_lcd_write(string_lcd);
+		iom_fpga_dot_write(fpga_number[specific_data]);
+		// iom_fpga_text_lcd_write(string_lcd);
 
 		// add timer 
 		timer.expires = get_jiffies_64() + (mydata.interval/10 * HZ);
