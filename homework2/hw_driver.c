@@ -62,9 +62,9 @@ static unsigned char led_number[8] = {128, 64, 32, 16, 8, 4, 2, 1};	// LED
 static unsigned char *iom_fpga_dot_addr;							// DOT
 
 static unsigned char *iom_fpga_text_lcd_addr;						// TEXT_LCD
-static unsigned char line_1[LINE_BUFF];										// TEXT_LCD
-static unsigned char line_2[LINE_BUFF];										// TEXT_LCD
-
+static unsigned char line_1[LINE_BUFF];								// TEXT_LCD
+static unsigned char line_2[LINE_BUFF];								// TEXT_LCD
+static unsigned char string_lcd[MAX_BUFF];									// TEXT_LCD
 
 /***************************** FOR DEVICE *****************************/
 
@@ -203,7 +203,6 @@ static void kernel_timer_function(unsigned long data) {
 	int index_value;
 	unsigned char specific_data;
 	unsigned char value[4];
-	unsigned char string_lcd[MAX_BUFF];
 
 	// count check
 	p_data->cnt--;
@@ -281,7 +280,6 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 	unsigned char specific_value;
 	char student_num[] = "120220184       ";
 	char student_name[] = "JungGyeongHwan  ";
-	unsigned char string_lcd[MAX_BUFF];
 	
 	switch (cmd) {
 		case SET_OPTION:
@@ -300,10 +298,11 @@ int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg)
 			memcpy(line_2, student_name, LINE_BUFF);
 
 			strncat(string_lcd, line_1, LINE_BUFF);
-			strncat(string_lcd+LINE_BUFF, line_2, LINE_BUFF);
+			strncat(string_lcd, line_2, LINE_BUFF);
 			for(index=0; index<MAX_BUFF; index++){
 				printk("string_lcd[%d] : %u \n", index, string_lcd[index]);
 			}
+			printk("is it ok? \n");
 
 			del_timer_sync(&timer);
 
