@@ -165,9 +165,7 @@ ssize_t iom_fpga_text_lcd_write(char *gdata)
 
 	for(i=0; i < MAX_BUFF; i++)
     {
-		printk("for loop num : %d\n", i);
         _s_value = (((value[i] & 0xFF) << 8) | (value[i + 1] & 0xFF));
-		printk("_s_value value : %u\n", _s_value);
 		outw(_s_value,(unsigned int)iom_fpga_text_lcd_addr+i);
         i++;
     }
@@ -211,7 +209,7 @@ static void kernel_timer_function(unsigned long data) {
 		iom_led_write(&led_init, 0);
 		iom_fpga_dot_write(fpga_set_blank);
 		memset(string_lcd, ' ', MAX_BUFF);
-		iom_fpga_text_lcd_write(string_lcd);
+		// iom_fpga_text_lcd_write(string_lcd);
 
 		del_timer(&timer);
 		return;
@@ -257,7 +255,7 @@ static void kernel_timer_function(unsigned long data) {
 		fnd_count--;
 		iom_led_write(&specific_data, 1);
 		iom_fpga_dot_write(fpga_number[specific_data]);
-		iom_fpga_text_lcd_write(string_lcd);
+		// iom_fpga_text_lcd_write(string_lcd);
 
 		// add timer 
 		timer.expires = get_jiffies_64() + (mydata.interval/10 * HZ);
