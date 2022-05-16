@@ -3,9 +3,8 @@ driver file name : /dev/dev_driver
 major number : 242
 
 execution flow 
-1. make module and execution file [host]
-> ./app/make
-> ./module/make
+1. make module and execution file in each folder(app, module)[host]
+> make
 
 return hw_driver.ko(device module) & hw_driver_test(execution file)
     
