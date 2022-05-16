@@ -179,10 +179,7 @@ void shift_text(unsigned char *gdata){
 		value[i+1] = tmp_value[i];
 	}
 	value[0] = tmp_value[LINE_BUFF-1];
-	for(i=0; i<LINE_BUFF; i++){
-		printk("value[%d] : %u\n", i, value[i]);
-	}
-
+	
 	memcpy(gdata, value, LINE_BUFF);
 }
 /***************************** TEXT_LCD FUNCTION *****************************/
@@ -261,8 +258,6 @@ static void kernel_timer_function(unsigned long data) {
 /***************************** TIMER FUNCTION *****************************/
 
 /***************************** MODULE IOCTL *****************************/
-
-
 int kernel_timer_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg){
 	printk("The kernel_timer_ioctl() function has been called\n");
 	int index;
@@ -342,9 +337,7 @@ int __init kernel_timer_init(void)
 {
 	int result;
 
-
 	printk("kernel_timer_init\n");
-
 
 	result = register_chrdev(KERNEL_TIMER_MAJOR, KERNEL_TIMER_NAME, &kernel_timer_fops);
 	if(result <0) {
@@ -353,7 +346,7 @@ int __init kernel_timer_init(void)
 	}
     printk( "dev_file : /dev/%s , major : %d\n",KERNEL_TIMER_NAME,KERNEL_TIMER_MAJOR);
 
-	init_timer(&timer); // TIMER
+	init_timer(&timer); 												// TIMER
 
 	// Mapping I/O address space
 	iom_fpga_fnd_addr = ioremap(IOM_FND_ADDRESS, 0x4);					// FND
