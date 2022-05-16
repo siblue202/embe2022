@@ -14,7 +14,7 @@
 #include <linux/delay.h>
 #include <linux/string.h>
 
-#include "hw_driver.h"							// IOCTL setting header file
+#include "./../hw_driver.h"							// IOCTL setting header file
 #include "./fpga_dot_font.h"					// DOT header file
 
 #define KERNEL_TIMER_MAJOR 242

@@ -4,7 +4,7 @@
 #include <asm/ioctl.h>
 #include <string.h>
 #include <fcntl.h>
-#include "hw_driver.h"
+#include "./../hw_driver.h"
 
 #define     KERNEL_TIMER_NAME       "/dev/dev_driver"
 
