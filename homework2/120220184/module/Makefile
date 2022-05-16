@@ -18,3 +18,5 @@ clean :
 	rm -rf *.order
 	rm -rf *.symvers
 	rm -rf hw_driver_test
+
+	1

@@ -380,3 +380,5 @@ module_exit( kernel_timer_exit);
 
 MODULE_LICENSE ("GPL");
 MODULE_AUTHOR ("author");
+
+1
