@@ -60,8 +60,8 @@ irqreturn_t inter_handler2(int irq, void* dev_id, struct pt_regs* reg) {
 
 irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
         printk(KERN_ALERT "interrupt3!!! = %x\n", gpio_get_value(IMX_GPIO_NR(2, 15)));
-        printk("interruptCount : %d \n", interruptCount);
-		if(++interruptCount >= 6) {
+        printk("interruptCount : %d \n", interruptCount+1);
+		if(++interruptCount >= 5) {
 			interruptCount=0;
 					__wake_up(&wq_write, 1, 1, NULL);
 			printk("wake up\n");
