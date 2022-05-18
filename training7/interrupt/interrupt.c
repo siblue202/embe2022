@@ -60,12 +60,19 @@ irqreturn_t inter_handler2(int irq, void* dev_id, struct pt_regs* reg) {
 
 irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
         printk(KERN_ALERT "interrupt3!!! = %x\n", gpio_get_value(IMX_GPIO_NR(2, 15)));
-        return IRQ_HANDLED;
+        
+		if(++interruptCount >= 5) {
+			interruptCount=0;
+			__wake_up(&wq_write, 1, 1, NULL);
+			prinktk("wake up\n");
+		}
+		
+		return IRQ_HANDLED;
 }
 
 irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
         printk(KERN_ALERT "interrupt4!!! = %x\n", gpio_get_value(IMX_GPIO_NR(5, 14)));
-        return IRQ_HANDLED;
+		return IRQ_HANDLED;
 }
 
 
@@ -100,7 +107,7 @@ static int inter_open(struct inode *minode, struct file *mfile){
 	gpio_direction_input(IMX_GPIO_NR(2,15));
 	irq = gpio_to_irq(IMX_GPIO_NR(2,15));
 	printk(KERN_ALERT "IRQ Number : %d\n",irq);
-	ret=request_irq(irq, inter_handler3, IRQF_TRIGGER_FALLING, "volup", 0);
+	ret=request_irq(irq, inter_handler3, IRQF_TRIGGER_RISING, "volup", 0);
 
 	// int4
 	gpio_direction_input(IMX_GPIO_NR(5,14));
