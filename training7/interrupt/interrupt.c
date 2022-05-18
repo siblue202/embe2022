@@ -64,7 +64,7 @@ irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
 		if(++interruptCount >= 5) {
 			interruptCount=0;
 					__wake_up(&wq_write, 1, 1, NULL);
-			prinktk("wake up\n");
+			printk("wake up\n");
 		}
 
 		return IRQ_HANDLED;
