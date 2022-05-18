@@ -28,7 +28,7 @@ irqreturn_t inter_handler3(int irq, void* dev_id, struct pt_regs* reg);
 irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg);
 
 static inter_usage=0;
-static int interruptCount=0;
+int interruptCount=0;
 
 wait_queue_head_t wq_write;
 DECLARE_WAIT_QUEUE_HEAD(wq_write);
