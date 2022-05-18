@@ -28,7 +28,7 @@ irqreturn_t inter_handler3(int irq, void* dev_id, struct pt_regs* reg);
 irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg);
 
 static inter_usage=0;
-int interruptCount=0;
+static int interruptCount=0;
 
 wait_queue_head_t wq_write;
 DECLARE_WAIT_QUEUE_HEAD(wq_write);
@@ -43,12 +43,12 @@ static struct file_operations inter_fops =
 irqreturn_t inter_handler1(int irq, void* dev_id, struct pt_regs* reg) {
 	printk(KERN_ALERT "interrupt1!!! = %x\n", gpio_get_value(IMX_GPIO_NR(1, 11)));
 
-	if(++interruptCount>=3) {
-		interruptCount=0;
-                __wake_up(&wq_write, 1, 1, NULL);
-		//wake_up_interruptible(&wq_write);
-		printk("wake up\n");
-        }
+	// if(++interruptCount>=3) {
+	// 	interruptCount=0;
+    //             __wake_up(&wq_write, 1, 1, NULL);
+	// 	//wake_up_interruptible(&wq_write);
+	// 	printk("wake up\n");
+    //     }
 
 	return IRQ_HANDLED;
 }
