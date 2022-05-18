@@ -3,8 +3,13 @@ obj-m := interrupt.o
 KDIR := /work/achroimx_kernel/
 PWD := $(shell pwd)
 
-default :
+all : driver app
+
+driver :
 	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules 
+
+app :
+	arm-none-linux-gnueabi-gcc -static -o intertest intertest.c
 
 clean : 
 	rm -f *.ko
