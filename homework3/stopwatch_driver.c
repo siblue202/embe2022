@@ -43,7 +43,7 @@ wait_queue_head_t wq_write;
 DECLARE_WAIT_QUEUE_HEAD(wq_write);
 
 static struct work_struct my_work;
-void my_wq_function();
+static void my_wq_function();
 static DECLARE_WORK(my_work, my_wq_function);
 
 
@@ -150,9 +150,9 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
 		return IRQ_HANDLED;
 }
 
-void my_wq_function() {
+static void my_wq_function() {
 	msleep(3000); // sleep 3sec
-	if(expired_time >= 300){
+	if(expired_time >= 3000){
 		// stop application
 		del_timer(&timer);
 		memset(stopwatch_value, 0, sizeof(stopwatch_value));
