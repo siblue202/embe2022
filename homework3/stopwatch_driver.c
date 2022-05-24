@@ -274,10 +274,7 @@ int kernel_stopwatch_ioctl(struct file * mfile, unsigned int cmd, unsigned long 
 		printk("COMMAND\n");
 
 		if(kernel_stopwatch_usage==1){
-            printk("sleep on\n");
-            interruptible_sleep_on(&wq_write);
-
-			// INIT MODE
+            // INIT MODE
 			// memcpy(fnd_value, stopwatch_value, sizeof(fnd_value));
 			iom_fpga_fnd_write(fnd_init);
 
@@ -287,6 +284,9 @@ int kernel_stopwatch_ioctl(struct file * mfile, unsigned int cmd, unsigned long 
 			timer.function = kernel_stopwatch_function;
 
 			add_timer(&timer);
+
+			printk("sleep on\n");
+            interruptible_sleep_on(&wq_write);
         }
 	} else {
 		printk(KERN_WARNING "unsupported command %d\n", cmd);
@@ -345,16 +345,7 @@ int kernel_stopwatch_open(struct inode *minode, struct file *mfile) {
 
 
 	printk(KERN_ALERT "Open Module\n");
-
-	// jgh
-	/* 
-	gpio : general purpose i/o
-	gpio_direction_input() : GPIO를 입력모드로 변경(데이터를 읽고 싶다면 입력모드)
-	gpio_to_irq() : GPIO에 해당되는 INTR 번호 얻기
-	request_irq() : INTR 서비스 함수 등록 
-	gpio_get_value() : GPIO PIN 값 읽기
-	*/
-
+	
 	// int1
 	gpio_direction_input(IMX_GPIO_NR(1,11));
 	irq = gpio_to_irq(IMX_GPIO_NR(1,11));
