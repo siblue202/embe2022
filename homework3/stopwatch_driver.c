@@ -151,7 +151,12 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
 }
 
 static void my_wq_function() {
-	msleep(3000); // sleep 3sec
+	int count = expired_time;
+	while(count+30 <= expired_time){
+		
+	}
+	// msleep(3000); // sleep 3sec
+
 	if(expired_time >= 30){
 		// stop application
 		del_timer_sync(&timer);
