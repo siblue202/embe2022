@@ -13,7 +13,7 @@ int main(int argc, char **argv){
     int i;
 
     stopwatch_fd = open(KERNEL_STOPWATCH_NAME, O_WRONLY);
-    if (timer_fd < 0) {
+    if (stopwatch_fd < 0) {
         printf("Open Failured! \n");
         return -1;
     }
