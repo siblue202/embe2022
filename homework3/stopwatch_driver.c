@@ -93,7 +93,7 @@ irqreturn_t inter_handler1(int irq, void* dev_id, struct pt_regs* reg) {
 		interrupt_1 = 1;
 		
 		// add timer 
-		timer.expires = get_jiffies_64() + int(0.1 * HZ);			// interval : 0.1sec
+		timer.expires = get_jiffies_64() + (int)(0.1 * HZ);			// interval : 0.1sec
 		timer.data = (unsigned long)&stopwatch_value;
 		timer.function = kernel_stopwatch_function;
 	}
@@ -189,7 +189,7 @@ static void kernel_stopwatch_function(unsigned long data) {
 	iom_fpga_fnd_write(fnd_value);
 
 	// add timer 
-	timer.expires = get_jiffies_64() + int(0.1 * HZ);			// interval : 0.1sec
+	timer.expires = get_jiffies_64() + (int)(0.1 * HZ);			// interval : 0.1sec
 	timer.data = (unsigned long)&stopwatch_value;
 	timer.function = kernel_stopwatch_function;
 
