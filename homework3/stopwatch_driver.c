@@ -149,7 +149,7 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
 }
 
 void my_wq_function() {
-	msleep(3000); // sleep 3sec
+	// msleep(3000); // sleep 3sec
 	if(pushed_stop == 1){
 		// stop application
 		del_timer(&timer);
