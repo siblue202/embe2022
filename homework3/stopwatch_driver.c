@@ -139,8 +139,10 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
 		
 		schedule_work(&my_work);
 		if(pushed_stop == 0) {
+			schedule_work(&my_work);
 			pushed_stop = 1;
 		} else {
+			cancel_delayed_work(&my_work);
 			pushed_stop = 0;
 		}
 
@@ -152,6 +154,8 @@ void my_wq_function() {
 	if(pushed_stop == 1){
 		// stop application
 		del_timer(&timer);
+		memset(stopwatch_value, 0, sizeof(stopwatch_value));
+		memset(fnd_value, 0, sizeof(fnd_value));
 		iom_fpga_fnd_write(fnd_init);
 		run_stopwatch = 0;
 		pushed_stop = 0;
