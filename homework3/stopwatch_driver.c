@@ -140,6 +140,7 @@ void my_wq_function() {
 	msleep(3000); // sleep 3sec
 	if(interrupt_4 == 1){
 		// stop application
+		del_timer(&timer);
 		iom_fpga_fnd_write(fnd_init);
 		__wake_up(&wq_write, 1, 1, NULL);
 
