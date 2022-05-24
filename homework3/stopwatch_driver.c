@@ -173,7 +173,7 @@ static void kernel_stopwatch_function(unsigned long data) {
 	unsigned char tmp[5];
 	unsigned char value[4];
 
-	if (run_stopwatch){
+	if (run_stopwatch == 1){
 		memcpy(&tmp, p_data, sizeof(tmp));
 
 		// time increase
@@ -211,7 +211,7 @@ static void kernel_stopwatch_function(unsigned long data) {
 		iom_fpga_fnd_write(fnd_value);
 	} 
 
-	if (!pushed_stop){
+	if (pushed_stop == 1){
 		expired_time ++;
 	} else {
 		expired_time = 0;
