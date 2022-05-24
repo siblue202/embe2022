@@ -53,10 +53,8 @@ static struct file_operations kernel_stopwatch_fops =
   .release = kernel_stopwatch_release };
 
 static struct timer_list timer;
-static int interrupt_1 = 0;
-static int interrupt_2 = 0;
-static int interrupt_3 = 0;
-static int interrupt_4 = 0;
+static int run_stopwatch = 0;
+static int pushed_stop = 0;
 static int kernel_stopwatch_usage = 0;
 
 /***************************** FOR stopwatch *****************************/
@@ -92,8 +90,8 @@ ssize_t iom_fpga_fnd_write(unsigned char *gdata)
 irqreturn_t inter_handler1(int irq, void* dev_id, struct pt_regs* reg) {
 	printk(KERN_ALERT "interrupt1!!! = %x\n", gpio_get_value(IMX_GPIO_NR(1, 11)));
 
-	if(interrupt_1 == 0) {
-		interrupt_1 = 1;
+	if(run_stopwatch == 0) {
+		run_stopwatch = 1;
 		
 		// add timer 
 		timer.expires = get_jiffies_64() + (int)(0.1 * HZ);			// interval : 0.1sec
@@ -109,8 +107,8 @@ irqreturn_t inter_handler1(int irq, void* dev_id, struct pt_regs* reg) {
 irqreturn_t inter_handler2(int irq, void* dev_id, struct pt_regs* reg) {
         printk(KERN_ALERT "interrupt2!!! = %x\n", gpio_get_value(IMX_GPIO_NR(1, 12)));
         
-		if(interrupt_1 == 1){
-			interrupt_1 = 0;
+		if(run_stopwatch == 1){
+			run_stopwatch = 0;
 		}
 		del_timer(&timer);
 		
@@ -125,7 +123,7 @@ irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
 		memset(fnd_value, 0, sizeof(fnd_value));
 		iom_fpga_fnd_write(&fnd_init);
 
-		if(interrupt_1 == 1){
+		if(run_stopwatch == 1){
 			timer.expires = get_jiffies_64() + (int)(0.1 * HZ);			// interval : 0.1sec
 			timer.data = (unsigned long)&stopwatch_value;
 			timer.function = kernel_stopwatch_function;
@@ -140,10 +138,10 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
         printk(KERN_ALERT "interrupt4!!! = %x\n", gpio_get_value(IMX_GPIO_NR(5, 14)));
 		
 		schedule_work(&my_work);
-		if(interrupt_4 == 0) {
-			interrupt_4 = 1;
+		if(pushed_stop == 0) {
+			pushed_stop = 1;
 		} else {
-			interrupt_4 = 0;
+			pushed_stop = 0;
 		}
 
 		return IRQ_HANDLED;
@@ -151,12 +149,13 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
 
 void my_wq_function() {
 	msleep(3000); // sleep 3sec
-	if(interrupt_4 == 1){
+	if(pushed_stop == 1){
 		// stop application
 		del_timer(&timer);
 		iom_fpga_fnd_write(fnd_init);
+		run_stopwatch = 0;
+		pushed_stop = 0;
 		__wake_up(&wq_write, 1, 1, NULL);
-
 	}
 }
 
