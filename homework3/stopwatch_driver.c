@@ -42,9 +42,9 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg);
 wait_queue_head_t wq_write;
 DECLARE_WAIT_QUEUE_HEAD(wq_write);
 
-static struct work_struct my_work;
+static struct delayed_work my_work;
 void my_wq_function();
-static DECLARE_DELAYED_WORK(&my_work, my_wq_function);
+static DECLARE_DELAYED_WORK(my_work, my_wq_function);
 
 
 static struct file_operations kernel_stopwatch_fops =
