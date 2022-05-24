@@ -42,9 +42,9 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg);
 wait_queue_head_t wq_write;
 DECLARE_WAIT_QUEUE_HEAD(wq_write);
 
-static struct delayed_work my_work;
+static struct work_struct my_work;
 void my_wq_function();
-static DECLARE_DELAYED_WORK(my_work, my_wq_function);
+static DECLARE_WORK(my_work, my_wq_function);
 
 
 static struct file_operations kernel_stopwatch_fops =
@@ -56,6 +56,7 @@ static struct timer_list timer;
 static int run_stopwatch = 0;
 static int pushed_stop = 0;
 static int kernel_stopwatch_usage = 0;
+static int expired_time = 0; 
 
 /***************************** FOR stopwatch *****************************/
 
@@ -93,12 +94,13 @@ irqreturn_t inter_handler1(int irq, void* dev_id, struct pt_regs* reg) {
 	if(run_stopwatch == 0) {
 		run_stopwatch = 1;
 		
-		// add timer 
-		timer.expires = get_jiffies_64() + (int)(0.1 * HZ);			// interval : 0.1sec
-		timer.data = (unsigned long)&stopwatch_value;
-		timer.function = kernel_stopwatch_function;
+		// // 123
+		// // add timer 
+		// timer.expires = get_jiffies_64() + (int)(0.1 * HZ);			// interval : 0.1sec
+		// timer.data = (unsigned long)&stopwatch_value;
+		// timer.function = kernel_stopwatch_function;
 
-		add_timer(&timer);
+		// add_timer(&timer);
 	}
 	
 	return IRQ_HANDLED;
@@ -110,7 +112,7 @@ irqreturn_t inter_handler2(int irq, void* dev_id, struct pt_regs* reg) {
 		if(run_stopwatch == 1){
 			run_stopwatch = 0;
 		}
-		del_timer(&timer);
+		// del_timer(&timer); // 123
 		
 		return IRQ_HANDLED;
 }
@@ -118,18 +120,19 @@ irqreturn_t inter_handler2(int irq, void* dev_id, struct pt_regs* reg) {
 irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
         printk(KERN_ALERT "interrupt3!!! = %x\n", gpio_get_value(IMX_GPIO_NR(2, 15)));
         
-		del_timer(&timer);
+		// del_timer(&timer); // 123
 	    memset(stopwatch_value, 0, sizeof(stopwatch_value));
 		memset(fnd_value, 0, sizeof(fnd_value));
 		iom_fpga_fnd_write(&fnd_init);
 
-		if(run_stopwatch == 1){
-			timer.expires = get_jiffies_64() + (int)(0.1 * HZ);			// interval : 0.1sec
-			timer.data = (unsigned long)&stopwatch_value;
-			timer.function = kernel_stopwatch_function;
+		// 123
+		// if(run_stopwatch == 1){
+		// 	timer.expires = get_jiffies_64() + (int)(0.1 * HZ);			// interval : 0.1sec
+		// 	timer.data = (unsigned long)&stopwatch_value;
+		// 	timer.function = kernel_stopwatch_function;
 
-			add_timer(&timer);
-		}
+		// 	add_timer(&timer);
+		// }
 
 		return IRQ_HANDLED;
 }
@@ -138,10 +141,9 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
         printk(KERN_ALERT "interrupt4!!! = %x\n", gpio_get_value(IMX_GPIO_NR(5, 14)));
 		
 		if(pushed_stop == 0) {
-			schedule_delayed_work(&my_work, 3000);
+			schedule_work(&my_work);
 			pushed_stop = 1;
 		} else {
-			cancel_delayed_work(&my_work);
 			pushed_stop = 0;
 		}
 
@@ -149,8 +151,8 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
 }
 
 void my_wq_function() {
-	// msleep(3000); // sleep 3sec
-	if(pushed_stop == 1){
+	msleep(3000); // sleep 3sec
+	if(expired_time >= 300){
 		// stop application
 		del_timer(&timer);
 		memset(stopwatch_value, 0, sizeof(stopwatch_value));
@@ -171,48 +173,93 @@ static void kernel_stopwatch_function(unsigned long data) {
 	unsigned char tmp[5];
 	unsigned char value[4];
 
-	memcpy(&tmp, p_data, sizeof(tmp));
+	if (run_stopwatch){
+		memcpy(&tmp, p_data, sizeof(tmp));
 
-	// time increase
-	tmp[4] += 1;
-	if (tmp[4] >= 10) {
-		tmp[3] += 1;
-		tmp[4] = 0;
-	}
+		// time increase
+		tmp[4] += 1;
+		if (tmp[4] >= 10) {
+			tmp[3] += 1;
+			tmp[4] = 0;
+		}
 
-	if (tmp[3] >= 10) {
-		tmp[2] += 1;
-		tmp[3] = 0;
+		if (tmp[3] >= 10) {
+			tmp[2] += 1;
+			tmp[3] = 0;
+		}
+		
+		if (tmp[2] >= 6) {
+			tmp[1] += 1;
+			tmp[2] = 0;
+		}
+
+		if (tmp[1] >= 10) {
+			tmp[0] += 1;
+			tmp[1] = 0;
+		}
+
+		if (tmp[0] >= 6) {
+			tmp[0] = 0;
+			// when min exceeds 60 min. stopwatch is done.
+			memcpy(p_data, &tmp, sizeof(tmp));
+			iom_fpga_fnd_write(fnd_init);
+			return;
+		}
+
+		memcpy(p_data, &tmp, sizeof(tmp));
+		memcpy(fnd_value, p_data, sizeof(fnd_value));
+		iom_fpga_fnd_write(fnd_value);
+	} 
+
+	if (!pushed_stop){
+		expired_time ++;
+	} else {
+		expired_time = 0;
 	}
 	
-	if (tmp[2] >= 6) {
-		tmp[1] += 1;
-		tmp[2] = 0;
-	}
+	// 123
+	// memcpy(&tmp, p_data, sizeof(tmp));
 
-	if (tmp[1] >= 10) {
-		tmp[0] += 1;
-		tmp[1] = 0;
-	}
+	// // time increase
+	// tmp[4] += 1;
+	// if (tmp[4] >= 10) {
+	// 	tmp[3] += 1;
+	// 	tmp[4] = 0;
+	// }
 
-	if (tmp[0] >= 6) {
-		tmp[0] = 0;
-		// when min exceeds 60 min. stopwatch is done.
-		memcpy(p_data, &tmp, sizeof(tmp));
-		iom_fpga_fnd_write(fnd_init);
-		return;
-	}
+	// if (tmp[3] >= 10) {
+	// 	tmp[2] += 1;
+	// 	tmp[3] = 0;
+	// }
+	
+	// if (tmp[2] >= 6) {
+	// 	tmp[1] += 1;
+	// 	tmp[2] = 0;
+	// }
 
-	memcpy(p_data, &tmp, sizeof(tmp));
-	memcpy(fnd_value, p_data, sizeof(fnd_value));
-	iom_fpga_fnd_write(fnd_value);
+	// if (tmp[1] >= 10) {
+	// 	tmp[0] += 1;
+	// 	tmp[1] = 0;
+	// }
+
+	// if (tmp[0] >= 6) {
+	// 	tmp[0] = 0;
+	// 	// when min exceeds 60 min. stopwatch is done.
+	// 	memcpy(p_data, &tmp, sizeof(tmp));
+	// 	iom_fpga_fnd_write(fnd_init);
+	// 	return;
+	// }
+
+	// memcpy(p_data, &tmp, sizeof(tmp));
+	// memcpy(fnd_value, p_data, sizeof(fnd_value));
+	// iom_fpga_fnd_write(fnd_value);
 
 	// add timer 
 	timer.expires = get_jiffies_64() + (int)(0.1 * HZ);			// interval : 0.1sec
 	timer.data = (unsigned long)&stopwatch_value;
 	timer.function = kernel_stopwatch_function;
 
-	 add_timer(&timer);
+	add_timer(&timer);
 }
 
 /***************************** STOPWATCH FUNCTION *****************************/
@@ -233,6 +280,13 @@ int kernel_stopwatch_ioctl(struct file * mfile, unsigned int cmd, unsigned long 
 			// INIT MODE
 			// memcpy(fnd_value, stopwatch_value, sizeof(fnd_value));
 			iom_fpga_fnd_write(fnd_init);
+
+			// add timer 
+			timer.expires = get_jiffies_64() + (int)(0.1 * HZ);			// interval : 0.1sec
+			timer.data = (unsigned long)&stopwatch_value;
+			timer.function = kernel_stopwatch_function;
+
+			add_timer(&timer);
         }
 	} else {
 		printk(KERN_WARNING "unsupported command %d\n", cmd);
