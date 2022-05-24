@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <fcntl.h>
+#include <asm/ioctl.h>
 
 #include "./stopwatch_ioctl.h"					// IOCTL setting header file
 
