@@ -154,14 +154,14 @@ static void my_wq_function() {
 	msleep(3000); // sleep 3sec
 	if(expired_time >= 3000){
 		// stop application
-		del_timer(&timer);
+		del_timer_sync(&timer);
 		memset(stopwatch_value, 0, sizeof(stopwatch_value));
 		memset(fnd_value, 0, sizeof(fnd_value));
 		iom_fpga_fnd_write(fnd_init);
+		__wake_up(&wq_write, 1, 1, NULL);
 		run_stopwatch = 0;
 		pushed_stop = 0;
 		expired_time = 0;
-		__wake_up(&wq_write, 1, 1, NULL);
 	}
 }
 
