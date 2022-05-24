@@ -68,6 +68,23 @@ static unsigned char stopwatch_value[5] = {0};
 
 /***************************** FOR DEVICE *****************************/
 
+/***************************** FND FUNCTION *****************************/
+// when write to fnd device  ,call this function
+ssize_t iom_fpga_fnd_write(unsigned char *gdata) 
+{
+	unsigned char value[4];
+	unsigned short int value_short = 0;
+
+	memcpy(&value, gdata, sizeof(value));
+
+    value_short = value[0] << 12 | value[1] << 8 |value[2] << 4 |value[3];
+    outw(value_short,(unsigned int)iom_fpga_fnd_addr);	    
+
+	return sizeof(value);
+}
+
+/***************************** FND FUNCTION *****************************/
+
 /***************************** FOR HANDLER *****************************/
 
 irqreturn_t inter_handler1(int irq, void* dev_id, struct pt_regs* reg) {
@@ -128,23 +145,6 @@ void my_work_function() {
 }
 
 /***************************** FOR HANDLER *****************************/
-
-/***************************** FND FUNCTION *****************************/
-// when write to fnd device  ,call this function
-ssize_t iom_fpga_fnd_write(unsigned char *gdata) 
-{
-	unsigned char value[4];
-	unsigned short int value_short = 0;
-
-	memcpy(&value, gdata, sizeof(value));
-
-    value_short = value[0] << 12 | value[1] << 8 |value[2] << 4 |value[3];
-    outw(value_short,(unsigned int)iom_fpga_fnd_addr);	    
-
-	return sizeof(value);
-}
-
-/***************************** FND FUNCTION *****************************/
 
 /***************************** STOPWATCH FUNCTION *****************************/
 // Executed when stopwatch is expired
