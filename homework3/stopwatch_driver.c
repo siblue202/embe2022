@@ -160,6 +160,7 @@ static void my_wq_function() {
 		iom_fpga_fnd_write(fnd_init);
 		run_stopwatch = 0;
 		pushed_stop = 0;
+		expired_time = 0;
 		__wake_up(&wq_write, 1, 1, NULL);
 	}
 }
