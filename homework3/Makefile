@@ -1,4 +1,4 @@
-obj-m = stopwatch_application.o 
+obj-m = stopwatch_driver.o 
 CC := arm-none-linux-gnueabi-gcc
 
 KDIR    :=/work/achroimx_kernel
