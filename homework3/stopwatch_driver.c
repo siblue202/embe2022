@@ -205,6 +205,23 @@ int kernel_stopwatch_ioctl(struct file * mfile, unsigned int cmd, unsigned long 
 	int index;
 	unsigned char specific_value;
 	
+	if (cmd == COMMAND){
+		printk("COMMAND\n");
+
+		if(kernel_stopwatch_usage==1){
+            printk("sleep on\n");
+            interruptible_sleep_on(&wq_write);
+
+			// INIT MODE
+			// memcpy(fnd_value, stopwatch_value, sizeof(fnd_value));
+			iom_fpga_fnd_write(fnd_init);
+        }
+	} else {
+		printk(KERN_WARNING "unsupported command %d\n", cmd);
+		return -EFAULT;
+	}
+
+/*
 	switch (cmd) {
 		// When ioctl is COMMAND, add timer device & start stopwatch function
 		case COMMAND:
@@ -224,6 +241,7 @@ int kernel_stopwatch_ioctl(struct file * mfile, unsigned int cmd, unsigned long 
 			printk(KERN_WARNING "unsupported command %d\n", cmd);
 			return -EFAULT;
 	}
+*/
 	return 0;
 }
 
