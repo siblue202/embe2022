@@ -1,4 +1,4 @@
-obj-m = stopwatch_driver.o 
+obj-m = stopwatch_application.o 
 CC := arm-none-linux-gnueabi-gcc
 
 KDIR    :=/work/achroimx_kernel
@@ -11,7 +11,7 @@ driver :
 	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
 
 app : 
-	arm-none-linux-gnueabi-gcc -static -o stopwatch_driver stopwatch_driver.c	
+	arm-none-linux-gnueabi-gcc -static -o stopwatch_application stopwatch_application.c	
 	
 clean : 
 	rm -rf *.o
@@ -19,4 +19,4 @@ clean :
 	rm -rf *.mod.c
 	rm -rf *.order
 	rm -rf *.symvers
-	rm -rf stopwatch_driver
+	rm -rf stopwatch_application
