@@ -44,7 +44,7 @@ DECLARE_WAIT_QUEUE_HEAD(wq_write);
 
 static struct work_struct my_work;
 void my_wq_function();
-static DECLARE_DELAYED_WORK(my_work, my_wq_function);
+static DECLARE_DELAYED_WORK(&my_work, my_wq_function);
 
 
 static struct file_operations kernel_stopwatch_fops =
@@ -137,7 +137,6 @@ irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
 irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
         printk(KERN_ALERT "interrupt4!!! = %x\n", gpio_get_value(IMX_GPIO_NR(5, 14)));
 		
-		schedule_work(&my_work);
 		if(pushed_stop == 0) {
 			schedule_delayed_work(&my_work, 3000);
 			pushed_stop = 1;
