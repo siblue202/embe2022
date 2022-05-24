@@ -212,7 +212,7 @@ static void kernel_stopwatch_function(unsigned long data) {
 	} 
 
 	if (pushed_stop == 1){
-		expired_time ++;
+		expired_time += 1;
 	} else {
 		expired_time = 0;
 	}
@@ -345,7 +345,7 @@ int kernel_stopwatch_open(struct inode *minode, struct file *mfile) {
 
 
 	printk(KERN_ALERT "Open Module\n");
-	
+
 	// int1
 	gpio_direction_input(IMX_GPIO_NR(1,11));
 	irq = gpio_to_irq(IMX_GPIO_NR(1,11));
