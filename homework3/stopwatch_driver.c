@@ -99,15 +99,19 @@ irqreturn_t inter_handler1(int irq, void* dev_id, struct pt_regs* reg) {
 		timer.expires = get_jiffies_64() + (int)(0.1 * HZ);			// interval : 0.1sec
 		timer.data = (unsigned long)&stopwatch_value;
 		timer.function = kernel_stopwatch_function;
-	}
-	add_timer(&timer);
 
+		add_timer(&timer);
+	}
+	
 	return IRQ_HANDLED;
 }
 
 irqreturn_t inter_handler2(int irq, void* dev_id, struct pt_regs* reg) {
         printk(KERN_ALERT "interrupt2!!! = %x\n", gpio_get_value(IMX_GPIO_NR(1, 12)));
         
+		if(interrupt_1 == 1){
+			interrupt_1 = 0;
+		}
 		del_timer(&timer);
 		
 		return IRQ_HANDLED;
@@ -116,9 +120,18 @@ irqreturn_t inter_handler2(int irq, void* dev_id, struct pt_regs* reg) {
 irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
         printk(KERN_ALERT "interrupt3!!! = %x\n", gpio_get_value(IMX_GPIO_NR(2, 15)));
         
+		del_timer(&timer);
 	    memset(stopwatch_value, 0, sizeof(stopwatch_value));
 		memset(fnd_value, 0, sizeof(fnd_value));
 		iom_fpga_fnd_write(&fnd_init);
+
+		if(interrupt_1 == 1){
+			timer.expires = get_jiffies_64() + (int)(0.1 * HZ);			// interval : 0.1sec
+			timer.data = (unsigned long)&stopwatch_value;
+			timer.function = kernel_stopwatch_function;
+
+			add_timer(&timer);
+		}
 
 		return IRQ_HANDLED;
 }
