@@ -139,7 +139,7 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
 		
 		schedule_work(&my_work);
 		if(pushed_stop == 0) {
-			schedule_delayed_work(&my_work, 3*HZ);
+			schedule_delayed_work(&my_work, 3000);
 			pushed_stop = 1;
 		} else {
 			cancel_delayed_work(&my_work);
