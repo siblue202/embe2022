@@ -133,7 +133,7 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
 		return IRQ_HANDLED;
 }
 
-void my_work_function() {
+void my_wq_function() {
 	msleep(3000); // sleep 3sec
 	if(interrupt_4 == 1){
 		// stop application
