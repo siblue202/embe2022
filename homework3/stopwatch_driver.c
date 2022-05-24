@@ -44,7 +44,7 @@ DECLARE_WAIT_QUEUE_HEAD(wq_write);
 
 static struct work_struct my_work;
 void my_wq_function();
-static DECLARE_WORK(my_work, my_wq_function);
+static DECLARE_DELAYED_WORK(my_work, my_wq_function);
 
 
 static struct file_operations kernel_stopwatch_fops =
