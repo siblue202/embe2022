@@ -141,8 +141,8 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
         printk(KERN_ALERT "interrupt4!!! = %x\n", gpio_get_value(IMX_GPIO_NR(5, 14)));
 		
 		if(pushed_stop == 0) {
-			schedule_work(&my_work);
 			pushed_stop = 1;
+			schedule_work(&my_work);
 		} else {
 			pushed_stop = 0;
 		}
@@ -172,6 +172,12 @@ static void kernel_stopwatch_function(unsigned long data) {
 	unsigned char *p_data = (unsigned char *)data;
 	unsigned char tmp[5];
 	unsigned char value[4];
+
+	if (pushed_stop == 1){
+		expired_time += 1;
+	} else {
+		expired_time = 0;
+	}
 
 	if (run_stopwatch == 1){
 		memcpy(&tmp, p_data, sizeof(tmp));
@@ -210,13 +216,6 @@ static void kernel_stopwatch_function(unsigned long data) {
 		memcpy(fnd_value, p_data, sizeof(fnd_value));
 		iom_fpga_fnd_write(fnd_value);
 	} 
-
-	if (pushed_stop == 1){
-		expired_time += 1;
-	} else {
-		expired_time = 0;
-	}
-	
 	// 123
 	// memcpy(&tmp, p_data, sizeof(tmp));
 
