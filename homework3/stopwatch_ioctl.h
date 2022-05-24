@@ -3,6 +3,6 @@
 #include <asm/ioctl.h>
    
 #define     IOCTL_MAGIC         'T'
-#define     COMMAND             _IOWR(IOCTL_MAGIC, 3 , NULL)
+#define     COMMAND             _IO(IOCTL_MAGIC, 3)
   
 #endif

@@ -11,10 +11,13 @@
 #include <linux/wait.h>
 #include <linux/version.h>
 #include <linux/workqueue.h>
+
 #include <asm/irq.h>
 #include <asm/uaccess.h>
 #include <asm/ioctl.h>
 #include <asm/io.h>
+#include <asm/gpio.h>
+
 #include <mach/gpio.h>
 
 #include "./stopwatch_ioctl.h"					// IOCTL setting header file
