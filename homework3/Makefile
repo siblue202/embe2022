@@ -8,7 +8,7 @@ all: driver app
 #all: driver 
 
 app : 
-	arm-none-linux-gnueabi-gcc -static -o hw_driver_test hw_driver_test.c
+	arm-none-linux-gnueabi-gcc -static -o stopwatch_driver stopwatch_driver.c
 
 driver : 
 	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
@@ -20,4 +20,4 @@ clean :
 	rm -rf *.mod.c
 	rm -rf *.order
 	rm -rf *.symvers
-	rm -rf hw_driver_test
+	rm -rf stopwatch_driver
