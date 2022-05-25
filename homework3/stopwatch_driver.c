@@ -220,8 +220,6 @@ static void kernel_stopwatch_function(unsigned long data) {
 
 int kernel_stopwatch_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg){
 	printk("The kernel_stopwatch_ioctl() function has been called\n");
-	int index;
-	unsigned char specific_value;
 	
 	if (cmd == COMMAND){
 		printk("COMMAND\n");
@@ -309,7 +307,6 @@ int kernel_stopwatch_open(struct inode *minode, struct file *mfile) {
 int __init kernel_stopwatch_init(void)
 {
 	int result;
-	int ret;
 
 	printk("kernel_stopwatch_init\n");
 
