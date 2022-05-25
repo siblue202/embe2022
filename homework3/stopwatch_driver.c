@@ -27,17 +27,17 @@
 #define KERNEL_STOPWATCH_NAME "stopwatch"
 #define IOM_FND_ADDRESS 0x08000004 				// physical address, FND
 
-/***************************** FOR stopwatch *****************************/
+/***************************** FOR STOPWATCH *****************************/
 
 int kernel_stopwatch_open(struct inode *, struct file *);
 int kernel_stopwatch_release(struct inode *, struct file *);
 int kernel_stopwatch_ioctl(struct file *, unsigned int, unsigned long);
 static void kernel_stopwatch_function(unsigned long);
 
-irqreturn_t inter_handler1(int irq, void* dev_id, struct pt_regs* reg);
-irqreturn_t inter_handler2(int irq, void* dev_id, struct pt_regs* reg);
-irqreturn_t inter_handler3(int irq, void* dev_id, struct pt_regs* reg);
-irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg);
+irqreturn_t home_inter_handler(int irq, void* dev_id, struct pt_regs* reg);
+irqreturn_t back_inter_handler(int irq, void* dev_id, struct pt_regs* reg);
+irqreturn_t volup_inter_handler(int irq, void* dev_id, struct pt_regs* reg);
+irqreturn_t voldown_inter_handler(int irq, void* dev_id, struct pt_regs* reg);
 
 wait_queue_head_t wq_write;
 DECLARE_WAIT_QUEUE_HEAD(wq_write);
@@ -57,19 +57,20 @@ static int run_stopwatch = 0;
 static int pushed_stop = 0;
 static int kernel_stopwatch_usage = 0;
 static int expired_time = 0; 
+static unsigned char stopwatch_value[5] = {0};						// STOPWATCH
 
-/***************************** FOR stopwatch *****************************/
+/***************************** FOR STOPWATCH *****************************/
 
 /***************************** FOR DEVICE *****************************/
 
 static unsigned char *iom_fpga_fnd_addr;							// FND
 static unsigned char fnd_value[4] = {0};							// FND
 static unsigned char fnd_init[4] = {0};								// FND
-static unsigned char stopwatch_value[5] = {0};
 
 /***************************** FOR DEVICE *****************************/
 
 /***************************** FND FUNCTION *****************************/
+
 // when write to fnd device  ,call this function
 ssize_t iom_fpga_fnd_write(unsigned char *gdata) 
 {
@@ -88,58 +89,35 @@ ssize_t iom_fpga_fnd_write(unsigned char *gdata)
 
 /***************************** FOR HANDLER *****************************/
 
-irqreturn_t inter_handler1(int irq, void* dev_id, struct pt_regs* reg) {
-	printk(KERN_ALERT "interrupt1!!! = %x\n", gpio_get_value(IMX_GPIO_NR(1, 11)));
-
+// when home button is pushed, this handler will be triggered
+irqreturn_t home_inter_handler(int irq, void* dev_id, struct pt_regs* reg) {
 	if(run_stopwatch == 0) {
 		run_stopwatch = 1;
-		
-		// // 123
-		// // add timer 
-		// timer.expires = get_jiffies_64() + (int)(0.1 * HZ);			// interval : 0.1sec
-		// timer.data = (unsigned long)&stopwatch_value;
-		// timer.function = kernel_stopwatch_function;
-
-		// add_timer(&timer);
 	}
 	
 	return IRQ_HANDLED;
 }
 
-irqreturn_t inter_handler2(int irq, void* dev_id, struct pt_regs* reg) {
-        printk(KERN_ALERT "interrupt2!!! = %x\n", gpio_get_value(IMX_GPIO_NR(1, 12)));
-        
+// when back button is pushed, this handler will be triggered
+irqreturn_t back_inter_handler(int irq, void* dev_id, struct pt_regs* reg) {        
 		if(run_stopwatch == 1){
 			run_stopwatch = 0;
 		}
-		// del_timer(&timer); // 123
 		
 		return IRQ_HANDLED;
 }
 
-irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
-        printk(KERN_ALERT "interrupt3!!! = %x\n", gpio_get_value(IMX_GPIO_NR(2, 15)));
-        
-		// del_timer(&timer); // 123
+// when vol+ button is pushed, this handler will be triggered
+irqreturn_t volup_inter_handler(int irq, void* dev_id,struct pt_regs* reg) {        
 	    memset(stopwatch_value, 0, sizeof(stopwatch_value));
 		memset(fnd_value, 0, sizeof(fnd_value));
 		iom_fpga_fnd_write(&fnd_init);
 
-		// 123
-		// if(run_stopwatch == 1){
-		// 	timer.expires = get_jiffies_64() + (int)(0.1 * HZ);			// interval : 0.1sec
-		// 	timer.data = (unsigned long)&stopwatch_value;
-		// 	timer.function = kernel_stopwatch_function;
-
-		// 	add_timer(&timer);
-		// }
-
 		return IRQ_HANDLED;
 }
 
-irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
-        printk(KERN_ALERT "interrupt4!!! = %x\n", gpio_get_value(IMX_GPIO_NR(5, 14)));
-		
+// when vol- button is pushed, this handler will be triggered
+irqreturn_t voldown_inter_handler(int irq, void* dev_id, struct pt_regs* reg) {		
 		if(pushed_stop == 0) {
 			pushed_stop = 1;
 			schedule_work(&my_work);
@@ -150,8 +128,10 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
 		return IRQ_HANDLED;
 }
 
+// BOTTOM HALF HANDELR(WORKQUEUE)
+// this handler is workqueue. voldown_inter_handler schedule this handler.
 static void my_wq_function() {
-	msleep(3000); // sleep 3sec
+	msleep(3000); 				// sleep 3sec
 
 	if(expired_time >= 30){
 		// stop application
@@ -169,11 +149,11 @@ static void my_wq_function() {
 /***************************** FOR HANDLER *****************************/
 
 /***************************** STOPWATCH FUNCTION *****************************/
-// Executed when stopwatch is expired
+
+// Executed when timer is expired
 static void kernel_stopwatch_function(unsigned long data) {
 	unsigned char *p_data = (unsigned char *)data;
 	unsigned char tmp[5];
-	unsigned char value[4];
 
 	if (pushed_stop == 1){
 		expired_time += 1;
@@ -209,8 +189,15 @@ static void kernel_stopwatch_function(unsigned long data) {
 		if (tmp[0] >= 6) {
 			tmp[0] = 0;
 			// when min exceeds 60 min. stopwatch is done.
+			del_timer(&timer);
+			memset(stopwatch_value, 0, sizeof(stopwatch_value));
+			memset(fnd_value, 0, sizeof(fnd_value));
 			memcpy(p_data, &tmp, sizeof(tmp));
 			iom_fpga_fnd_write(fnd_init);
+			__wake_up(&wq_write, 1, 1, NULL);
+			run_stopwatch = 0;
+			pushed_stop = 0;
+			expired_time = 0;
 			return;
 		}
 
@@ -218,44 +205,8 @@ static void kernel_stopwatch_function(unsigned long data) {
 		memcpy(fnd_value, p_data, sizeof(fnd_value));
 		iom_fpga_fnd_write(fnd_value);
 	} 
-	// 123
-	// memcpy(&tmp, p_data, sizeof(tmp));
 
-	// // time increase
-	// tmp[4] += 1;
-	// if (tmp[4] >= 10) {
-	// 	tmp[3] += 1;
-	// 	tmp[4] = 0;
-	// }
-
-	// if (tmp[3] >= 10) {
-	// 	tmp[2] += 1;
-	// 	tmp[3] = 0;
-	// }
-	
-	// if (tmp[2] >= 6) {
-	// 	tmp[1] += 1;
-	// 	tmp[2] = 0;
-	// }
-
-	// if (tmp[1] >= 10) {
-	// 	tmp[0] += 1;
-	// 	tmp[1] = 0;
-	// }
-
-	// if (tmp[0] >= 6) {
-	// 	tmp[0] = 0;
-	// 	// when min exceeds 60 min. stopwatch is done.
-	// 	memcpy(p_data, &tmp, sizeof(tmp));
-	// 	iom_fpga_fnd_write(fnd_init);
-	// 	return;
-	// }
-
-	// memcpy(p_data, &tmp, sizeof(tmp));
-	// memcpy(fnd_value, p_data, sizeof(fnd_value));
-	// iom_fpga_fnd_write(fnd_value);
-
-	// add timer 
+	// add timer repeatably
 	timer.expires = get_jiffies_64() + (int)(0.1 * HZ);			// interval : 0.1sec
 	timer.data = (unsigned long)&stopwatch_value;
 	timer.function = kernel_stopwatch_function;
@@ -266,6 +217,7 @@ static void kernel_stopwatch_function(unsigned long data) {
 /***************************** STOPWATCH FUNCTION *****************************/
 
 /***************************** MODULE IOCTL *****************************/
+
 int kernel_stopwatch_ioctl(struct file * mfile, unsigned int cmd, unsigned long arg){
 	printk("The kernel_stopwatch_ioctl() function has been called\n");
 	int index;
@@ -276,7 +228,6 @@ int kernel_stopwatch_ioctl(struct file * mfile, unsigned int cmd, unsigned long 
 
 		if(kernel_stopwatch_usage==1){
             // INIT MODE
-			// memcpy(fnd_value, stopwatch_value, sizeof(fnd_value));
 			iom_fpga_fnd_write(fnd_init);
 
 			// add timer 
@@ -294,30 +245,8 @@ int kernel_stopwatch_ioctl(struct file * mfile, unsigned int cmd, unsigned long 
 		return -EFAULT;
 	}
 
-/*
-	switch (cmd) {
-		// When ioctl is COMMAND, add timer device & start stopwatch function
-		case COMMAND:
-			printk("COMMAND\n");
-
-			if(kernel_stopwatch_usage==1){
-                printk("sleep on\n");
-                interruptible_sleep_on(&wq_write);
-
-				// INIT MODE
-				// memcpy(fnd_value, stopwatch_value, sizeof(fnd_value));
-				iom_fpga_fnd_write(fnd_init);
-         	}
-
-			break;
-		default:
-			printk(KERN_WARNING "unsupported command %d\n", cmd);
-			return -EFAULT;
-	}
-*/
 	return 0;
 }
-
 
 /***************************** MODULE IOCTL *****************************/
 
@@ -351,25 +280,25 @@ int kernel_stopwatch_open(struct inode *minode, struct file *mfile) {
 	gpio_direction_input(IMX_GPIO_NR(1,11));
 	irq = gpio_to_irq(IMX_GPIO_NR(1,11));
 	printk(KERN_ALERT "IRQ Number : %d\n",irq);
-	ret=request_irq(irq, inter_handler1, IRQF_TRIGGER_FALLING, "home", 0);
+	ret=request_irq(irq, home_inter_handler, IRQF_TRIGGER_FALLING, "home", 0);
 
 	// int2
 	gpio_direction_input(IMX_GPIO_NR(1,12));
 	irq = gpio_to_irq(IMX_GPIO_NR(1,12));
 	printk(KERN_ALERT "IRQ Number : %d\n",irq);
-	ret=request_irq(irq, inter_handler2, IRQF_TRIGGER_FALLING, "back", 0);
+	ret=request_irq(irq, back_inter_handler, IRQF_TRIGGER_FALLING, "back", 0);
 
 	// int3
 	gpio_direction_input(IMX_GPIO_NR(2,15));
 	irq = gpio_to_irq(IMX_GPIO_NR(2,15));
 	printk(KERN_ALERT "IRQ Number : %d\n",irq);
-	ret=request_irq(irq, inter_handler3, IRQF_TRIGGER_FALLING, "volup", 0);
+	ret=request_irq(irq, volup_inter_handler, IRQF_TRIGGER_FALLING, "volup", 0);
 
 	// int4
 	gpio_direction_input(IMX_GPIO_NR(5,14));
 	irq = gpio_to_irq(IMX_GPIO_NR(5,14));
 	printk(KERN_ALERT "IRQ Number : %d\n",irq);
-	ret=request_irq(irq, inter_handler4, IRQF_TRIGGER_FALLING|IRQF_TRIGGER_RISING, "voldown", 0);
+	ret=request_irq(irq, voldown_inter_handler, IRQF_TRIGGER_FALLING|IRQF_TRIGGER_RISING, "voldown", 0);
 
 	return 0;
 }
