@@ -20,7 +20,7 @@
 
 #include <mach/gpio.h>
 
-#include "./stopwatch_ioctl.h"					// IOCTL setting header file
+#include "./../stopwatch_ioctl.h"					// IOCTL setting header file
 
 #define KERNEL_STOPWATCH_MAJOR 242
 #define KERNEL_STOPWATCH_MINOR 0

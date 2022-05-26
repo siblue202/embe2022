@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include <asm/ioctl.h>
 
-#include "./stopwatch_ioctl.h"					// IOCTL setting header file
+#include "./../stopwatch_ioctl.h"					// IOCTL setting header file
 
 #define     KERNEL_STOPWATCH_NAME       "/dev/stopwatch"
 
