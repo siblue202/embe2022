@@ -130,8 +130,9 @@ static int inter_write(struct file *filp, const char *buf, size_t count, loff_t 
 
 static int inter_read(struct file *filep, char __user *buf, size_t count, loff_t *f_pos){
 
-    size_t buf_size = sizeof(return_value);
-    copy_to_user(buf, &return_value, buf_size);
+    if (copy_to_user(buf, &return_value, count)){
+        return -EFAULT;
+    }
     return_value = 0;
 
     return count;
