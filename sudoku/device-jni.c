@@ -17,8 +17,7 @@ jint JNICALL Java_com_example_androidex_SudokuActivity_readKey(JNIEnv *env, jobj
         return -1;
     }
 
-    int buff_size = sizeof(buff);
-    read(fd, &buff, buff_size);
+    read(fd, &buff, 1);
 
     if (buff == '1'){
         result = 1;
