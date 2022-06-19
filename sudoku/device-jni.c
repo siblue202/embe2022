@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include <jni.h>
 #include "android/log.h"
 #include <unistd.h>
@@ -6,7 +8,7 @@
 #define LOG_TAG "jniTag"
 #define LOGV(...)   __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
 
-JNIEXPORT jint JNICALL Java_com_example_androidex_SudokuActivity_readKey(JNIEnv *, jobject){
+jint JNICALL Java_com_example_androidex_SudokuActivity_readKey(JNIEnv *env, jobject this){
     char buff;
     int result;
 
@@ -16,7 +18,7 @@ JNIEXPORT jint JNICALL Java_com_example_androidex_SudokuActivity_readKey(JNIEnv 
     }
 
     int buff_size = sizeof(buff);
-    read(fd, buff, buff_size);
+    read(fd, &buff, buff_size);
 
     if (buff == '1'){
         result = 1;
@@ -34,7 +36,7 @@ JNIEXPORT jint JNICALL Java_com_example_androidex_SudokuActivity_readKey(JNIEnv 
     return result;
 }
 
-JNIEXPORT jint JNICALL Java_com_example_androidex_SudokuActivity_readSwitch(JNIEnv *, jobject){
+jint JNICALL Java_com_example_androidex_SudokuActivity_readSwitch(JNIEnv *env, jobject this){
     unsigned char push[9];
     int result;
 
