@@ -15,7 +15,7 @@ jint JNICALL Java_com_example_androidex_SudokuActivity_readKey(JNIEnv *env, jobj
 
     int fd = open("/dev/fpga_dip_switch", O_RDWR);
     if (fd<0){
-        close(dev);
+        close(fd);
         return -1;
     }
 
