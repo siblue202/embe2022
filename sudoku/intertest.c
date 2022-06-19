@@ -2,6 +2,14 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <fcntl.h>
+#include <signal.h>
+
+unsigned char quit = 0;
+
+void user_signal1(int sig){
+    quit = 1;
+}
+
 int main(void){
 	int fd;
 	char buf;
@@ -10,11 +18,18 @@ int main(void){
 	if(fd < 0) {
 		perror("/dev/inter error");
 		exit(-1);
-	}
-        else { printf("< inter Device has been detected > \n"); }
-	
-    read(fd, &buf, 1);
-    printf("read result : %c\n", buf);
+	} else {
+        printf("< inter Device has been detected > \n");
+    }
+
+    (void)signal(SIGINT, user_signal1);
+	while(!quit){
+        usleep(400000);
+
+        read(fd, &buf, 1);
+        printf("read result : %c\n", buf);
+
+    }
 
 	close(fd);
 
