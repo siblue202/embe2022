@@ -10,6 +10,7 @@
 
 jint JNICALL Java_com_example_androidex_SudokuActivity_readKey(JNIEnv *env, jobject this){
     int result;
+    int buf;
     unsigned char dip_sw_buff = 0;
 
     int fd = open("/dev/fpga_dip_switch", O_RDWR);
@@ -19,18 +20,12 @@ jint JNICALL Java_com_example_androidex_SudokuActivity_readKey(JNIEnv *env, jobj
     }
 
     read(fd, &dip_sw_buff, 1);
-    
+    buf = dip_sw_buff;
 
-    if (buff == 1){
-        result = 1;
-    } else if (buff == 2){
-        result = 2;
-    } else if (buff == 3){
-        result = 3;
-    } else if (buff == 4){
-        result = 4;
-    } else {
+    if (buf == 0){
         result = 0;
+    } else {
+        result = 1;
     }
     
     close(fd);
