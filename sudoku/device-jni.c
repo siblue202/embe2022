@@ -9,17 +9,17 @@
 #define LOGV(...)   __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
 
 jint JNICALL Java_com_example_androidex_SudokuActivity_readKey(JNIEnv *env, jobject this){
-    int buff;
     int result;
+    unsigned char dip_sw_buff = 0;
 
-    int fd = open("/dev/inter", O_RDWR);
+    int fd = open("/dev/fpga_dip_switch", O_RDWR);
     if (fd<0){
+        close(dev);
         return -1;
     }
 
-    size_t buff_size = sizeof(buff);
-    read(fd, &buff, buff_size);
-    LOGV("JNI read value : %d", buff);
+    read(fd, &dip_sw_buff, 1);
+    
 
     if (buff == 1){
         result = 1;
