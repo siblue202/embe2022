@@ -30,7 +30,7 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg);
 
 static int inter_usage=0;
 int interruptCount=0;
-char return_value = 0;
+char return_value = '0';
 
 wait_queue_head_t wq_write;
 DECLARE_WAIT_QUEUE_HEAD(wq_write);
