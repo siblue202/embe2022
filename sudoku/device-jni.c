@@ -10,28 +10,24 @@
 #define LOGV(...)   __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
 
 jint JNICALL Java_com_example_androidex_SudokuActivity_readKey(JNIEnv *env, jobject this){
-    char buff;
+    int buff;
     int result;
-    char cmp_1 = '1';
-    char cmp_2 = '2';
-    char cmp_3 = '3';
-    char cmp_4 = '4';
-
 
     int fd = open("/dev/inter", O_RDWR);
     if (fd<0){
         return -1;
     }
 
-    read(fd, &buff, 1);
+    size_t buff_size = sizeof(buff);
+    read(fd, &buff, buff_size);
 
-    if (strcmp(&buff,&cmp_1) == 0){
+    if (buff == 1){
         result = 1;
-    } else if (strcmp(&buff,&cmp_2) == 0){
+    } else if (buff == 2){
         result = 2;
-    } else if (strcmp(&buff,&cmp_3) == 0){
+    } else if (buff == 3){
         result = 3;
-    } else if (strcmp(&buff,&cmp_4) == 0){
+    } else if (buff == 4){
         result = 4;
     } else {
         result = 0;
