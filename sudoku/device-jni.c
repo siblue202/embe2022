@@ -7,9 +7,67 @@
 #define LOGV(...)   __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
 
 JNIEXPORT jint JNICALL Java_com_example_androidex_SudokuActivity_readKey(JNIEnv *, jobject){
+    char buff;
+    int result;
 
+    int fd = open("/dev/inter", O_RDWR);
+    if (fd<0){
+        return -1;
+    }
+
+    int buff_size = sizeof(buff);
+    read(fd, buff, buff_size);
+
+    if (buff == '1'){
+        result = 1;
+    } else if (buff == '2'){
+        result = 2;
+    } else if (buff == '3'){
+        result = 3;
+    } else if (buff == '4'){
+        result = 4;
+    } else {
+        result = 0;
+    }
+    
+    close(fd);
+    return result;
 }
 
 JNIEXPORT jint JNICALL Java_com_example_androidex_SudokuActivity_readSwitch(JNIEnv *, jobject){
-    
+    unsigned char push[9];
+    int result;
+
+    int fd = open("/dev/fpga_push_switch", O_RDWR);
+    if (fd<0){
+        return -1;
+    }
+
+    int buff_size = sizeof(push);
+    read(fd, push, buff_size);
+
+    if (push[0]){
+        result = 1;
+    } else if (push[1]){
+        result = 2;
+    } else if (push[2]){
+        result = 3;
+    } else if (push[3]){
+        result = 4;
+    } else if (push[4]){
+        result = 5;
+    } else if (push[5]){
+        result = 6;
+    } else if (push[6]){
+        result = 7;
+    } else if (push[7]){
+        result = 8;
+    } else if (push[8]){
+        result = 9;
+    } else {
+        result = 0;
+    }
+
+    close(fd);
+    return result;
 }
