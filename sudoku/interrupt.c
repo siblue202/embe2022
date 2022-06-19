@@ -47,6 +47,7 @@ irqreturn_t inter_handler1(int irq, void* dev_id, struct pt_regs* reg) {
 	printk(KERN_ALERT "interrupt1!!! = %x\n", gpio_get_value(IMX_GPIO_NR(1, 11)));
 
 	return_value = 1;
+    printk(KERN_ALERT "return_value : %c\n", return_value);
 	return IRQ_HANDLED;
 }
 
@@ -54,6 +55,7 @@ irqreturn_t inter_handler2(int irq, void* dev_id, struct pt_regs* reg) {
     printk(KERN_ALERT "interrupt2!!! = %x\n", gpio_get_value(IMX_GPIO_NR(1, 12)));
         
     return_value = 2;
+    printk(KERN_ALERT "return_value : %c\n", return_value);
     return IRQ_HANDLED;
 }
 
@@ -61,6 +63,7 @@ irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
     printk(KERN_ALERT "interrupt3!!! = %x\n", gpio_get_value(IMX_GPIO_NR(2, 15)));
         
     return_value = 3;
+    printk(KERN_ALERT "return_value : %c\n", return_value);
 	return IRQ_HANDLED;
 }
 
@@ -68,6 +71,7 @@ irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
     printk(KERN_ALERT "interrupt4!!! = %x\n", gpio_get_value(IMX_GPIO_NR(5, 14)));
 		
     return_value = 4;
+    printk(KERN_ALERT "return_value : %c\n", return_value);
     return IRQ_HANDLED;
 }
 
@@ -126,7 +130,7 @@ static int inter_write(struct file *filp, const char *buf, size_t count, loff_t 
 
 static int inter_read(struct file *filep, char __user *buf, size_t count, loff_t *f_pos){
 
-    copy_to_user(&buf, &return_value, 1);
+    copy_to_user(buf, &return_value, 1);
 
     return count;
 }
