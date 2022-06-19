@@ -4,7 +4,6 @@
 #include "android/log.h"
 #include <unistd.h>
 #include <fcntl.h>
-#include <string.h>
 
 #define LOG_TAG "jniTag"
 #define LOGV(...)   __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
@@ -20,6 +19,7 @@ jint JNICALL Java_com_example_androidex_SudokuActivity_readKey(JNIEnv *env, jobj
 
     size_t buff_size = sizeof(buff);
     read(fd, &buff, buff_size);
+    LOGV("JNI read value : %d", buff);
 
     if (buff == 1){
         result = 1;
