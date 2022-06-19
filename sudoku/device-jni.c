@@ -12,6 +12,11 @@
 jint JNICALL Java_com_example_androidex_SudokuActivity_readKey(JNIEnv *env, jobject this){
     char buff;
     int result;
+    char cmp_1 = '1';
+    char cmp_2 = '2';
+    char cmp_3 = '3';
+    char cmp_4 = '4';
+
 
     int fd = open("/dev/inter", O_RDWR);
     if (fd<0){
@@ -20,13 +25,13 @@ jint JNICALL Java_com_example_androidex_SudokuActivity_readKey(JNIEnv *env, jobj
 
     read(fd, &buff, 1);
 
-    if (strcmp(buff,'1') == 0){
+    if (strcmp(&buff,&cmp_1) == 0){
         result = 1;
-    } else if (strcmp(buff,'2') == 0){
+    } else if (strcmp(&buff,&cmp_2) == 0){
         result = 2;
-    } else if (strcmp(buff,'3') == 0){
+    } else if (strcmp(&buff,&cmp_3) == 0){
         result = 3;
-    } else if (strcmp(buff,'4') == 0){
+    } else if (strcmp(&buff,&cmp_4) == 0){
         result = 4;
     } else {
         result = 0;
