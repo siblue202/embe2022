@@ -14,6 +14,7 @@ int main(void){
         else { printf("< inter Device has been detected > \n"); }
 	
     read(fd, &buf, 1);
+    printf("read result : %c\n", buf);
 
 	close(fd);
 
