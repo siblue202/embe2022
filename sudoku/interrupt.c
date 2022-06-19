@@ -46,7 +46,7 @@ static struct file_operations inter_fops =
 irqreturn_t inter_handler1(int irq, void* dev_id, struct pt_regs* reg) {
 	printk(KERN_ALERT "interrupt1!!! = %x\n", gpio_get_value(IMX_GPIO_NR(1, 11)));
 
-	return_value = 1;
+	return_value = '1';
     printk(KERN_ALERT "return_value : %c\n", return_value);
 	return IRQ_HANDLED;
 }
@@ -54,7 +54,7 @@ irqreturn_t inter_handler1(int irq, void* dev_id, struct pt_regs* reg) {
 irqreturn_t inter_handler2(int irq, void* dev_id, struct pt_regs* reg) {
     printk(KERN_ALERT "interrupt2!!! = %x\n", gpio_get_value(IMX_GPIO_NR(1, 12)));
         
-    return_value = 2;
+    return_value = '2';
     printk(KERN_ALERT "return_value : %c\n", return_value);
     return IRQ_HANDLED;
 }
@@ -62,7 +62,7 @@ irqreturn_t inter_handler2(int irq, void* dev_id, struct pt_regs* reg) {
 irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
     printk(KERN_ALERT "interrupt3!!! = %x\n", gpio_get_value(IMX_GPIO_NR(2, 15)));
         
-    return_value = 3;
+    return_value = '3';
     printk(KERN_ALERT "return_value : %c\n", return_value);
 	return IRQ_HANDLED;
 }
@@ -70,7 +70,7 @@ irqreturn_t inter_handler3(int irq, void* dev_id,struct pt_regs* reg) {
 irqreturn_t inter_handler4(int irq, void* dev_id, struct pt_regs* reg) {
     printk(KERN_ALERT "interrupt4!!! = %x\n", gpio_get_value(IMX_GPIO_NR(5, 14)));
 		
-    return_value = 4;
+    return_value = '4';
     printk(KERN_ALERT "return_value : %c\n", return_value);
     return IRQ_HANDLED;
 }
