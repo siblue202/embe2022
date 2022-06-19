@@ -133,8 +133,6 @@ static int inter_read(struct file *filep, char __user *buf, size_t count, loff_t
     if (copy_to_user(buf, &return_value, count)){
         return -EFAULT;
     }
-    return_value = 0;
-
     return count;
 }
 
