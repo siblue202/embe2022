@@ -13,13 +13,8 @@ void user_signal1(int sig){
 
 int main(void){
 	int fd;
-	char buf;
+	int buf;
     int result;
-
-    char cmp_1 = '1';
-    char cmp_2 = '2';
-    char cmp_3 = '3';
-    char cmp_4 = '4';
 
 	fd = open("/dev/inter", O_RDWR);
 	if(fd < 0) {
@@ -29,19 +24,21 @@ int main(void){
         printf("< inter Device has been detected > \n");
     }
 
+    size_t buf_size = sizeof(buf);
+
     (void)signal(SIGINT, user_signal1);
 	while(!quit){
         usleep(400000);
 
-        read(fd, &buf, 1);
+        read(fd, &buf, buf_size);
         //printf("read result : %c\n", buf);
-        if (strcmp(&buf,&cmp_1) == 0){
+        if (buf == 0){
             result = 1;
-        } else if (strcmp(&buf,&cmp_2) == 0){
+        } else if (buf == 1){
             result = 2;
-        } else if (strcmp(&buf,&cmp_3) == 0){
+        } else if (buf == 2){
             result = 3;
-        } else if (strcmp(&buf,&cmp_4) == 0){
+        } else if (buf == 3){
             result = 4;
         } else {
             result = 0;
