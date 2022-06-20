@@ -44,23 +44,23 @@ jint JNICALL Java_com_example_androidex_SudokuActivity_readSwitch(JNIEnv *env, j
     int buff_size = sizeof(push);
     read(fd, push, buff_size);
 
-    if (push[0]){
+    if (push[0] && push[0] < 2){
         result = 1;
-    } else if (push[1]){
+    } else if (push[1] && push[0] < 2){
         result = 2;
-    } else if (push[2]){
+    } else if (push[2] && push[0] < 2){
         result = 3;
-    } else if (push[3]){
+    } else if (push[3] && push[0] < 2){
         result = 4;
-    } else if (push[4]){
+    } else if (push[4] && push[0] < 2){
         result = 5;
-    } else if (push[5]){
+    } else if (push[5] && push[0] < 2){
         result = 6;
-    } else if (push[6]){
+    } else if (push[6] && push[0] < 2){
         result = 7;
-    } else if (push[7]){
+    } else if (push[7] && push[0] < 2){
         result = 8;
-    } else if (push[8]){
+    } else if (push[8] && push[0] < 2){
         result = 9;
     } else {
         result = 0;
