@@ -1,0 +1,11 @@
+<resources>
+
+    <string name="main_title">Android Sudoku</string>
+    <string name="app_name">Sudoku</string>
+    <string name="new_game_label">Game</string>
+    <string name="music_label">Music</string>
+    <string name="music_stop_label">Music Stop</string>
+    <string name="exit_label">Exit</string>
+    <string name="complition">Congratulation. All tiles are set!</string>
+
+</resources>
